@@ -23,7 +23,7 @@ public class PostController {
     @PostMapping("")
     public ResponseEntity<PostResponseDto> createPost(
             @RequestPart(name = "post") PostRequestDto postRequestDto,
-            @RequestPart("images") List<MultipartFile> images
+            @RequestPart(value = "images") List<MultipartFile> images
     ) throws IOException {
         return postService.createPost(postRequestDto, images);
     }
