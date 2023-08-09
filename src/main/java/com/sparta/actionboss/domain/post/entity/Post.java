@@ -26,10 +26,13 @@ public class Post extends Timestamped {
 
     @Column(nullable = false)
     @ElementCollection
-    private List<String> image;
+    private List<String> images;
 
     @Column(nullable = false)
     private boolean done;
+
+    @Column(nullable = false)
+    private String address;
 
     @Column(nullable = false)
     private Double latitude;
@@ -41,9 +44,11 @@ public class Post extends Timestamped {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public Post(PostRequestDto postRequestDto) {
+    public Post(PostRequestDto postRequestDto, List<String> imageURLs) {
         this.title = postRequestDto.getTitle();
         this.content = postRequestDto.getContent();
+        this.images = imageURLs;
+        this.address = postRequestDto.getAddress();
         this.latitude = postRequestDto.getLatitude();
         this.longitude = postRequestDto.getLongitude();
     }
