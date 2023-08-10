@@ -55,18 +55,34 @@ public class PostService {
         return ResponseEntity.ok(new PostResponseDto(post));
     }
 
+//    @Transactional
+//    public ResponseEntity<DeleteResponseDto> deletePost(Long postId) {
+//        Post post = findPost(postId);
+//        postRepository.delete(post);
+//        String folderName = post.getImageUrls().get(0).substring(S3_BUCKET_URL - 1, S3_BUCKET_URL + UUID_RANDOM_UUID_SIZE);
+//        System.out.println("folderName = " + folderName);
+//        s3Service.removeFolder(folderName);
+//        return ResponseEntity.ok(new DeleteResponseDto());
+//    }
 
+    @Transactional
     public ResponseEntity<DeleteResponseDto> deletePost(Long postId) {
-        Post post = findPost(postId);
-        postRepository.delete(post);
+        List<String> imageUrls = findPost(postId).getImageUrls();
+        postRepository.delete(findPost(postId));
+        if (!imageUrls.isEmpty()) {
+            String requestFolderName = s3Service.getRequestFolderNameFromImageUrl(imageUrls.get(0));
+            System.out.println("folderName = " + requestFolderName);
+            s3Service.deleteFolder(requestFolderName);
+        }
         return ResponseEntity.ok(new DeleteResponseDto());
     }
 
 
-    public Post findPost(Long postId) {
+    private Post findPost(Long postId) {
         return postRepository.findById(postId).orElseThrow(
                 () -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
     }
+
 
 }
 

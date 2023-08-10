@@ -1,8 +1,7 @@
 package com.sparta.actionboss.domain.post.service;
 
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +11,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -73,6 +74,7 @@ public class S3Service {
         }
         // 유니크한 파일명
         String uniqueFileName = UUID.randomUUID().toString() + "_" + multipartFile.getOriginalFilename();
+
         File convertFile = new File(targetDirectory + uniqueFileName);
         if (convertFile.createNewFile()) {
             try (FileOutputStream fileOutputStream = new FileOutputStream(convertFile)) { // fileOutputStream 데이터 -> 바이트 스트림으로 저장
@@ -83,18 +85,80 @@ public class S3Service {
         throw new IOException("파일 전환에 실패했습니다: " + multipartFile.getOriginalFilename() + " (경로: " + convertFile.getAbsolutePath() + ")");
     }
 
+    public String getRequestFolderNameFromImageUrl(String imageUrl) {
+        try {
+            URL pasedUrl = new URL(imageUrl);
+            String path = pasedUrl.getPath();
+            String dir = path.substring(0, path.lastIndexOf("/") + 1).substring(8);
+            System.out.println("dir = " + dir);
+            return dir;
+        } catch (MalformedURLException e) {
+            System.out.println("e.getMessage() = " + e.getMessage());
+        }
+        return null;
+    }
 
-//    public String imageUpload(MultipartFile multipartFile) throws IOException {
-//        // 파일 이름이 중복되지 않도록 랜덤 값 + 파일 이름
-//        String s3FileName = UUID.randomUUID() + "//" + multipartFile.getOriginalFilename();
+    public void deleteFolder(String requestFolderName) {
+        ObjectListing objectListing = amazonS3Client.listObjects(s3Bucket, "images/" + requestFolderName);
+        List<DeleteObjectsRequest.KeyVersion> keyVersions = new ArrayList<>();
+        for (S3ObjectSummary objectSummary : objectListing.getObjectSummaries()) {
+            keyVersions.add(new DeleteObjectsRequest.KeyVersion(objectSummary.getKey()));
+        }
+        if (!keyVersions.isEmpty()) {
+            DeleteObjectsRequest deleteObjectsRequest = new DeleteObjectsRequest(s3Bucket).withKeys(keyVersions);
+            amazonS3Client.deleteObjects(deleteObjectsRequest);
+        }
+
+    }
+
+
+//    public void removeFolder(String folderName){
+//        ListObjectsV2Request listObjectsV2Request = new ListObjectsV2Request().withBucketName(s3Bucket).withPrefix(folderName+"/");
+//        ListObjectsV2Result listObjectsV2Result = amazonS3Client.listObjectsV2(listObjectsV2Request);
+//        ListIterator<S3ObjectSummary> listIterator = listObjectsV2Result.getObjectSummaries().listIterator();
 //
-//        // Spring server에서 S3으로 파일 업로드를 할 때, 파일 사이즈를 알려주기 -> ObjectMetadata를 통해서
-//        ObjectMetadata objectMetadata = new ObjectMetadata();
-//        objectMetadata.setContentLength(multipartFile.getInputStream().available());
-//
-//        // 객체 전체 저장
-//        amazonS3.putObject(s3Bucket, s3FileName, multipartFile.getInputStream(), objectMetadata);
-//
-//        return amazonS3.getUrl(s3Bucket, s3FileName).toString();
+//        while (listIterator.hasNext()){
+//            S3ObjectSummary objectSummary = listIterator.next();
+//            DeleteObjectRequest request = new DeleteObjectRequest(s3Bucket,objectSummary.getKey());
+//            amazonS3Client.deleteObject(request);
+//            System.out.println("Deleted " + objectSummary.getKey());
+//        }
 //    }
+
+
+//    public void deleteImage(String imageUrl) {
+//        String originalFileName = imageUrl.substring(URL_PREFIX - 1);
+//        System.out.println("originalFileName = " + originalFileName);
+//        amazonS3Client.deleteObject(s3Bucket, originalFileName);
+//    }
+
+
+//    public void deletePost(List<String> imageUrls) {
+//        for (String imageUrl : imageUrls) {
+//            String key = getKeyFromUrl(imageUrl);
+//            log.info("key: " + key);
+//
+//            try {
+//                amazonS3Client.deleteObject(new DeleteObjectRequest(s3Bucket, key));
+//            } catch (AmazonServiceException e) {
+//                System.out.println("e.getMessage() = " + e.getMessage());
+//            } catch (SdkClientException e) {
+//                System.out.println("e.getMessage() = " + e.getMessage());
+//            }
+//        }
+//    }
+//
+//    public String getKeyFromUrl(String imageUrl) {
+//        try {
+//            URL parsedUrl = new URL(imageUrl);
+//            String path = parsedUrl.getPath().replaceFirst("/" + s3Bucket + "/", "");
+//            System.out.println("path = " + path);
+//            return path;
+//        } catch (MalformedURLException e) {
+//            System.out.println("e.getMessage() = " + e.getMessage());
+//        }
+//        return null;
+//    }
+
+
 }
