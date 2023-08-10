@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -19,7 +20,7 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 public class PostService {
-    private final com.sparta.actionboss.domain.post.service.S3Uploader s3Uploader;
+    private final S3Uploader s3Uploader;
     private final PostRepository postRepository;
 
     private static final int MAXIMUM_IMAGES = 3;    // 이미지 업로드 최대 개수
@@ -47,6 +48,7 @@ public class PostService {
         return ResponseEntity.ok(new PostResponseDto(post));
     }
 
+    @Transactional
     public ResponseEntity<PostResponseDto> updatePost(Long postId, PostRequestDto postRequestDto) {
         Post post = findPost(postId);
         post.update(postRequestDto);

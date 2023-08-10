@@ -26,7 +26,7 @@ public class Post extends Timestamped {
 
     @Column(nullable = false)
     @ElementCollection
-    private List<String> images;
+    private List<String> imageUrls;
 
     @Column(nullable = false)
     private boolean done;
@@ -47,7 +47,7 @@ public class Post extends Timestamped {
     public Post(PostRequestDto postRequestDto, List<String> imageURLs) {
         this.title = postRequestDto.getTitle();
         this.content = postRequestDto.getContent();
-        this.images = imageURLs;
+        this.imageUrls = imageURLs;
         this.address = postRequestDto.getAddress();
         this.latitude = postRequestDto.getLatitude();
         this.longitude = postRequestDto.getLongitude();
@@ -56,7 +56,5 @@ public class Post extends Timestamped {
     public void update(PostRequestDto postRequestDto) {
         this.title = postRequestDto.getTitle();
         this.content = postRequestDto.getContent();
-        this.latitude = postRequestDto.getLatitude();
-        this.longitude = postRequestDto.getLongitude();
     }
 }

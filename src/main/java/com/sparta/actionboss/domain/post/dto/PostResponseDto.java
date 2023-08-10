@@ -9,6 +9,7 @@ import java.util.List;
 
 @Getter
 public class PostResponseDto {
+    private Long postId;
     private String title;
     private String content;
     private List<String> imageUrlList;
@@ -19,9 +20,10 @@ public class PostResponseDto {
     private LocalDateTime createdAt;
 
     public PostResponseDto(Post post) {
+        this.postId = post.getPostId();
         this.title = post.getTitle();
         this.content = post.getContent();
-        this.imageUrlList = post.getImages();
+        this.imageUrlList = post.getImageUrls();
         this.address = post.getAddress();
         this.latitude = post.getLatitude();
         this.longitude = post.getLongitude();
