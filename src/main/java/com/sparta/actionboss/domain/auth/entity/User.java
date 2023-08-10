@@ -27,12 +27,16 @@ public class User extends Timestamped {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
-    private String phoneNumber;
-
-    @Column(nullable = false)
-    private String userName;
+    @Enumerated(EnumType.STRING)
+    private UserRoleEnum role;
 
     @OneToMany(mappedBy = "user")
     private List<Post> postList = new ArrayList<>();
+
+    public User(String nickname, String password, String email, UserRoleEnum role) {
+        this.nickname = nickname;
+        this.password = password;
+        this.email = email;
+        this.role = role;
+    }
 }
