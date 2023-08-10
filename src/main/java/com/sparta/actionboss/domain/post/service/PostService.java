@@ -20,7 +20,7 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 public class PostService {
-    private final S3Uploader s3Uploader;
+    private final S3Service s3Service;
     private final PostRepository postRepository;
 
     private static final int MAXIMUM_IMAGES = 3;    // 이미지 업로드 최대 개수
@@ -36,7 +36,7 @@ public class PostService {
         // 요청별로 폴더생성 -> 저장
         String directoryPath = "images/" + UUID.randomUUID().toString();
 
-        List<String> imageURLs = s3Uploader.upload(images, directoryPath);
+        List<String> imageURLs = s3Service.upload(images, directoryPath);
         Post post = new Post(postRequestDto, imageURLs);
         postRepository.save(post);
 
