@@ -1,9 +1,6 @@
 package com.sparta.actionboss.domain.auth.service;
 
-import com.sparta.actionboss.domain.auth.dto.LoginRequestDto;
-import com.sparta.actionboss.domain.auth.dto.LoginResponseDto;
-import com.sparta.actionboss.domain.auth.dto.SignupRequestDto;
-import com.sparta.actionboss.domain.auth.dto.TokenDto;
+import com.sparta.actionboss.domain.auth.dto.*;
 import com.sparta.actionboss.domain.auth.entity.User;
 import com.sparta.actionboss.domain.auth.entity.UserRoleEnum;
 import com.sparta.actionboss.domain.auth.repository.UserRepository;
@@ -11,6 +8,7 @@ import com.sparta.actionboss.global.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -30,10 +28,9 @@ public class UserService {
         String nickname = requestDto.getNickname();
         String password = passwordEncoder.encode(requestDto.getPassword());
 
-        // 회원 중복 확인
-        Optional<User> checkNickname = userRepository.findByNickname(nickname);
-        if (checkNickname.isPresent()) {
-            throw new IllegalArgumentException("중복된 닉네임입니다.");
+        //닉네임 중복확인
+        if(checkNickname(nickname)){
+            throw new IllegalArgumentException("이미 존재하는 닉네임입니다.");
         }
 
         // email 중복확인
@@ -68,4 +65,26 @@ public class UserService {
         return new LoginResponseDto(tokenDto.getAccessToken());
 
     }
+
+    //닉네임 중복확인
+    @Transactional(readOnly = true)
+    public userResponseDto nicknameCheck(NicknameCheckRequestDto requestDto) {
+        String nickname = requestDto.getNickname();
+        if (checkNickname(nickname)) {
+            return new userResponseDto("이미 존재하는 닉네임입니다.");
+        } else {
+            return new userResponseDto("사용 가능한 닉네임입니다.");
+        }
+    }
+
+    private boolean checkNickname(String nickname){
+        Optional<User> checkNickname = userRepository.findByNickname(nickname);
+        if(checkNickname.isPresent()){
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
 }
