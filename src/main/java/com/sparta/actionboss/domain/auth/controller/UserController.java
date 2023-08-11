@@ -1,9 +1,6 @@
 package com.sparta.actionboss.domain.auth.controller;
 
-import com.sparta.actionboss.domain.auth.dto.LoginRequestDto;
-import com.sparta.actionboss.domain.auth.dto.LoginResponseDto;
-import com.sparta.actionboss.domain.auth.dto.SignupRequestDto;
-import com.sparta.actionboss.domain.auth.dto.userResponseDto;
+import com.sparta.actionboss.domain.auth.dto.*;
 import com.sparta.actionboss.domain.auth.service.MailSendServiceImpl;
 import com.sparta.actionboss.domain.auth.service.UserService;
 import com.sparta.actionboss.global.security.JwtUtil;
@@ -30,6 +27,11 @@ public class UserController {
         LoginResponseDto responseDto = userService.login(requestDto);
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, responseDto.getAccessToken());
         return new userResponseDto("로그인에 성공하였습니다.");
+    }
+
+    @PostMapping("/signup/nicknameCheck")
+    public userResponseDto nicknameCheck(@RequestBody NicknameCheckRequestDto requestDto){
+        return userService.nicknameCheck(requestDto);
     }
 
 }
