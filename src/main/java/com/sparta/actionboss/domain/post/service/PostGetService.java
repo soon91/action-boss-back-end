@@ -2,6 +2,7 @@ package com.sparta.actionboss.domain.post.service;
 
 import com.sparta.actionboss.domain.post.dto.PostListAndTotalPageResponseDto;
 import com.sparta.actionboss.domain.post.dto.PostListResponseDto;
+import com.sparta.actionboss.domain.post.dto.PostModalResponseDto;
 import com.sparta.actionboss.domain.post.entity.Post;
 import com.sparta.actionboss.domain.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -50,4 +51,12 @@ public class PostGetService {
 
         return new PostListAndTotalPageResponseDto(postListResponseDtos, post.getTotalPages());
     }
+
+    public PostModalResponseDto getModalPost(Long postId) {
+        Post findPost = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글을 찾을 수 없습니다."));
+
+        return new PostModalResponseDto(findPost);
+    }
+
 }

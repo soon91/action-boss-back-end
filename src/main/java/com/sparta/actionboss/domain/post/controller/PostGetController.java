@@ -1,12 +1,10 @@
 package com.sparta.actionboss.domain.post.controller;
 
 import com.sparta.actionboss.domain.post.dto.PostListAndTotalPageResponseDto;
+import com.sparta.actionboss.domain.post.dto.PostModalResponseDto;
 import com.sparta.actionboss.domain.post.service.PostGetService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -15,7 +13,7 @@ public class PostGetController {
 
     private final PostGetService postGetService;
 
-    @GetMapping("/posts")
+    @GetMapping("/main")
     public PostListAndTotalPageResponseDto getPostList(
             @RequestParam Integer page,
             @RequestParam Integer size
@@ -23,5 +21,11 @@ public class PostGetController {
     ) {
         PostListAndTotalPageResponseDto postListAndTotalPageResponseDto = postGetService.getPostList(page, size);
         return postListAndTotalPageResponseDto;
+    }
+
+    @GetMapping("/main/{postId}")
+    public PostModalResponseDto getSelectPost(@PathVariable Long postId) {
+        PostModalResponseDto postModalResopnseDto = postGetService.getModalPost(postId);
+        return postModalResopnseDto;
     }
 }
