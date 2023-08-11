@@ -28,7 +28,6 @@ public class S3Service {
     @Value("${cloud.aws.s3.bucket}")
     private String s3Bucket;
 
-//    private final AmazonS3 amazonS3;
 
     // 파일을 S3에 업로드
     // UUID.randomUUID() : 중복 방지
@@ -90,10 +89,9 @@ public class S3Service {
             URL pasedUrl = new URL(imageUrl);
             String path = pasedUrl.getPath();
             String dir = path.substring(0, path.lastIndexOf("/") + 1).substring(8);
-            System.out.println("dir = " + dir);
             return dir;
         } catch (MalformedURLException e) {
-            System.out.println("e.getMessage() = " + e.getMessage());
+            log.error(e.getMessage());
         }
         return null;
     }
@@ -110,55 +108,4 @@ public class S3Service {
         }
 
     }
-
-
-//    public void removeFolder(String folderName){
-//        ListObjectsV2Request listObjectsV2Request = new ListObjectsV2Request().withBucketName(s3Bucket).withPrefix(folderName+"/");
-//        ListObjectsV2Result listObjectsV2Result = amazonS3Client.listObjectsV2(listObjectsV2Request);
-//        ListIterator<S3ObjectSummary> listIterator = listObjectsV2Result.getObjectSummaries().listIterator();
-//
-//        while (listIterator.hasNext()){
-//            S3ObjectSummary objectSummary = listIterator.next();
-//            DeleteObjectRequest request = new DeleteObjectRequest(s3Bucket,objectSummary.getKey());
-//            amazonS3Client.deleteObject(request);
-//            System.out.println("Deleted " + objectSummary.getKey());
-//        }
-//    }
-
-
-//    public void deleteImage(String imageUrl) {
-//        String originalFileName = imageUrl.substring(URL_PREFIX - 1);
-//        System.out.println("originalFileName = " + originalFileName);
-//        amazonS3Client.deleteObject(s3Bucket, originalFileName);
-//    }
-
-
-//    public void deletePost(List<String> imageUrls) {
-//        for (String imageUrl : imageUrls) {
-//            String key = getKeyFromUrl(imageUrl);
-//            log.info("key: " + key);
-//
-//            try {
-//                amazonS3Client.deleteObject(new DeleteObjectRequest(s3Bucket, key));
-//            } catch (AmazonServiceException e) {
-//                System.out.println("e.getMessage() = " + e.getMessage());
-//            } catch (SdkClientException e) {
-//                System.out.println("e.getMessage() = " + e.getMessage());
-//            }
-//        }
-//    }
-//
-//    public String getKeyFromUrl(String imageUrl) {
-//        try {
-//            URL parsedUrl = new URL(imageUrl);
-//            String path = parsedUrl.getPath().replaceFirst("/" + s3Bucket + "/", "");
-//            System.out.println("path = " + path);
-//            return path;
-//        } catch (MalformedURLException e) {
-//            System.out.println("e.getMessage() = " + e.getMessage());
-//        }
-//        return null;
-//    }
-
-
 }

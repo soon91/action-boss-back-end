@@ -5,8 +5,11 @@ import com.sparta.actionboss.domain.post.dto.DeleteResponseDto;
 import com.sparta.actionboss.domain.post.dto.PostRequestDto;
 import com.sparta.actionboss.domain.post.dto.PostResponseDto;
 import com.sparta.actionboss.domain.post.service.PostService;
+import com.sparta.actionboss.global.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,42 +17,61 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
+@Slf4j
 @RequestMapping("/api/posts")
 @RequiredArgsConstructor
 public class PostController {
 
     private final PostService postService;
 
+
+    // 민원글 작성
     @PostMapping("")
     public ResponseEntity<PostResponseDto> createPost(
             @RequestPart(name = "post") PostRequestDto postRequestDto,
-            @RequestPart(value = "images") List<MultipartFile> images
+            @RequestPart(value = "images") List<MultipartFile> images,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) throws IOException {
-        return postService.createPost(postRequestDto, images);
+        return postService.createPost(
+                postRequestDto,
+                images,
+                userDetails.getUser()
+        );
     }
-    /*
-    public ResponseEntity<Long> createPost(
-		@RequestParam(value = "title") String title,
-		@RequestParam(value = "content") String content,
-		@RequestParam(value = "latitude") Double latitude,
-		@RequestParam(value = "longitude") Double longitude
 
-		// (required = false)
-    )
-     */
-
+    // 민원글 상세 조회 (postId)
     @GetMapping("/{postId}")
-    public ResponseEntity<PostResponseDto> getPost(@PathVariable Long postId) {
+    public ResponseEntity<PostResponseDto> getPost(
+            @PathVariable Long postId
+    ) {
         return postService.getPost(postId);
     }
 
+
+    // 민원글 수정
     @PutMapping("/{postId}")
-    public ResponseEntity<PostResponseDto> updatePost(@PathVariable Long postId, @RequestBody PostRequestDto postRequestDto) {
-        return postService.updatePost(postId, postRequestDto);
+    public ResponseEntity<PostResponseDto> updatePost(
+            @PathVariable Long postId,
+            @RequestBody PostRequestDto postRequestDto,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        return postService.updatePost(
+                postId,
+                postRequestDto,
+                userDetails.getUser()
+        );
     }
 
-    @DeleteMapping("{postId}")
-    public ResponseEntity<DeleteResponseDto> deletePost(@PathVariable Long postId) {
-        return postService.deletePost(postId);
+
+    // 민원글 삭제
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<DeleteResponseDto> deletePost(
+            @PathVariable Long postId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        return postService.deletePost(
+                postId,
+                userDetails.getUser()
+        );
     }
 }

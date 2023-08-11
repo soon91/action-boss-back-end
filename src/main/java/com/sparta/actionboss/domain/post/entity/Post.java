@@ -44,13 +44,14 @@ public class Post extends Timestamped {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public Post(PostRequestDto postRequestDto, List<String> imageURLs) {
+    public Post(PostRequestDto postRequestDto, List<String> imageURLs, User user) {
         this.title = postRequestDto.getTitle();
         this.content = postRequestDto.getContent();
         this.imageUrls = imageURLs;
         this.address = postRequestDto.getAddress();
         this.latitude = postRequestDto.getLatitude();
         this.longitude = postRequestDto.getLongitude();
+        this.user = user;
     }
 
     public void update(PostRequestDto postRequestDto) {

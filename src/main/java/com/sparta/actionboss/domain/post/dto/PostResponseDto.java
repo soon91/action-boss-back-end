@@ -18,6 +18,7 @@ public class PostResponseDto {
     private Double longitude;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDateTime createdAt;
+    private String nickname;
 
     public PostResponseDto(Post post) {
         this.postId = post.getPostId();
@@ -28,5 +29,6 @@ public class PostResponseDto {
         this.latitude = post.getLatitude();
         this.longitude = post.getLongitude();
         this.createdAt = post.getCreatedAt();
+        this.nickname = post.getUser().getNickname();
     }
 }
