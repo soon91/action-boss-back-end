@@ -11,6 +11,7 @@ public class SignupRequestDto {
     @Pattern(regexp = "^[a-zA-Z0-9]{8,15}$")
     private String password;
     private String nickname;
+    private String successKey;
     private boolean admin = false;
     private String adminToken = "";
 }
