@@ -23,9 +23,9 @@ public class PostGetService {
 
     private final PostRepository postRepository;
 
-    public PostListAndTotalPageResponseDto getPostList(Integer page, Integer limit) {
+    public PostListAndTotalPageResponseDto getPostList(Integer page, Integer limit, String sortBy) {
         Sort.Direction direction = Sort.Direction.DESC;
-        Sort sort = Sort.by(direction, "modifiedAt");
+        Sort sort = Sort.by(direction, sortBy, "modifiedAt");
 
         Pageable pageable = PageRequest.of(page, limit, sort);
         Page<Post> post = postRepository.findAll(pageable);
@@ -37,7 +37,7 @@ public class PostGetService {
                     return new PostListResponseDto(
                             a.getPostId(),
                             a.getTitle(),
-                            // TODO 이미지, 좋아요갯수
+                            // TODO 좋아요갯수
                             a.getUser().getNickname(),
                             a.getLatitude(),
                             a.getLongitude(),

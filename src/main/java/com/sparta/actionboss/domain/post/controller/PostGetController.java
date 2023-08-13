@@ -15,11 +15,11 @@ public class PostGetController {
 
     @GetMapping("/main")
     public PostListAndTotalPageResponseDto getPostList(
-            @RequestParam Integer page,
-            @RequestParam Integer size
-//            @RequestParam String sortBy
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam Integer size,
+            @RequestParam String sortBy
     ) {
-        PostListAndTotalPageResponseDto postListAndTotalPageResponseDto = postGetService.getPostList(page, size);
+        PostListAndTotalPageResponseDto postListAndTotalPageResponseDto = postGetService.getPostList(page, size, sortBy);
         return postListAndTotalPageResponseDto;
     }
 
