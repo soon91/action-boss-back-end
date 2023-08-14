@@ -11,8 +11,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -30,29 +28,28 @@ public class S3Service {
 
 
     // 파일을 S3에 업로드
-    // UUID.randomUUID() : 중복 방지
     public List<String> upload(List<MultipartFile> multipartFiles, String dirName) throws IOException {
-        List<String> uploaderFileURLs = new ArrayList<>();
+        List<String> fileNames = new ArrayList<>();
 
         for (MultipartFile multipartFile : multipartFiles) {
             // MultipartFile -> File 변환
             File uploadFile = convert(multipartFile).orElseThrow(
                     () -> new IllegalArgumentException("파일 전환에 실패했습니다."));
-            String uploadedImageURL = upload(uploadFile, dirName);
-            uploaderFileURLs.add(uploadedImageURL);
+            String fileName = uploadFile.getName();
+            upload(uploadFile, dirName);
+            fileNames.add(fileName);
         }
-        return uploaderFileURLs;
+        return fileNames;
     }
 
     // Overloading
     private String upload(File uploadFile, String dirName) {
-        String uniqueFileName = UUID.randomUUID().toString() + "_" + uploadFile.getName();
-        String s3FileName = dirName + "/" + uniqueFileName;
+        String s3FileName = dirName + "/" + uploadFile.getName();
         String uploadImageURL = putS3(uploadFile, s3FileName);
 
-        boolean deleteSuccessful = uploadFile.delete(); // 로컬에 저장된 이미지 삭제
+        boolean deleteSuccessful = uploadFile.delete(); // 임시로 저장된 이미지 삭제
         if (!deleteSuccessful) {
-            log.error("로컬에 저장된 이미지 삭제 실패");
+            log.error("임시로 저장된 이미지 삭제 실패");
         }
         return uploadImageURL;
     }
@@ -64,36 +61,30 @@ public class S3Service {
     }
 
     public Optional<File> convert(MultipartFile multipartFile) throws IOException {
-        String homeDirectory = System.getProperty("user.dir");
-        String targetDirectory = homeDirectory + "/src/main/resources/images/";
-        File directory = new File(targetDirectory);
 
-        if (!directory.exists()) {
-            directory.mkdirs();
+        String originalFileName = multipartFile.getOriginalFilename();
+
+        if (originalFileName == null) {
+            log.error("originalFileName == null");
+            return Optional.empty();
         }
-        // 유니크한 파일명
-        String uniqueFileName = UUID.randomUUID().toString() + "_" + multipartFile.getOriginalFilename();
+        String fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
 
-        File convertFile = new File(targetDirectory + uniqueFileName);
-        if (convertFile.createNewFile()) {
+        String uniqueFileName = UUID.randomUUID() + "/" + originalFileName.substring(0, originalFileName.lastIndexOf("-"));
+
+        // 유니크한 파일명 -> createTempFile 중복방지: 자체적으로 난수 생성
+        File convertFile = File.createTempFile(uniqueFileName, fileExtension);
+
+        String fileName = convertFile.getName();
+        System.out.println(fileName);
+
+        if (convertFile.exists()) {
             try (FileOutputStream fileOutputStream = new FileOutputStream(convertFile)) { // fileOutputStream 데이터 -> 바이트 스트림으로 저장
                 fileOutputStream.write(multipartFile.getBytes());
             }
             return Optional.of(convertFile);
         }
         throw new IOException("파일 전환에 실패했습니다: " + multipartFile.getOriginalFilename() + " (경로: " + convertFile.getAbsolutePath() + ")");
-    }
-
-    public String getRequestFolderNameFromImageUrl(String imageUrl) {
-        try {
-            URL pasedUrl = new URL(imageUrl);
-            String path = pasedUrl.getPath();
-            String dir = path.substring(0, path.lastIndexOf("/") + 1).substring(8);
-            return dir;
-        } catch (MalformedURLException e) {
-            log.error(e.getMessage());
-        }
-        return null;
     }
 
     public void deleteFolder(String requestFolderName) {
@@ -106,6 +97,5 @@ public class S3Service {
             DeleteObjectsRequest deleteObjectsRequest = new DeleteObjectsRequest(s3Bucket).withKeys(keyVersions);
             amazonS3Client.deleteObjects(deleteObjectsRequest);
         }
-
     }
 }

@@ -15,8 +15,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .allowedHeaders("*")
                 .exposedHeaders("*")
                 .allowedOrigins("http://localhost:3000")
-//                TODO : refresh token 추가 시
-//                .exposedHeaders("Access", "Refresh")
                 .allowedMethods("OPTIONS", "GET", "POST", "PUT", "DELETE")
                 .maxAge(3000);
     }

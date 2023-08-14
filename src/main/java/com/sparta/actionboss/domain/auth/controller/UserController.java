@@ -1,7 +1,6 @@
 package com.sparta.actionboss.domain.auth.controller;
 
 import com.sparta.actionboss.domain.auth.dto.*;
-import com.sparta.actionboss.domain.auth.service.MailSendServiceImpl;
 import com.sparta.actionboss.domain.auth.service.UserService;
 import com.sparta.actionboss.global.security.JwtUtil;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/auth")
 public class UserController {
 
     private final UserService userService;
@@ -30,8 +29,18 @@ public class UserController {
     }
 
     @PostMapping("/signup/nicknameCheck")
-    public userResponseDto nicknameCheck(@RequestBody NicknameCheckRequestDto requestDto){
-        return userService.nicknameCheck(requestDto);
+    public userResponseDto checkNickname(@RequestBody CheckNicknameRequestDto requestDto){
+        return userService.checkNickname(requestDto);
+    }
+
+    @PostMapping("/signup/emailSend")
+    public userResponseDto sendEmail(@RequestBody SendEmailRequestDto requestDto){
+        return userService.sendEmail(requestDto);
+    }
+
+    @PostMapping("/signup/emailCheck")
+    public userResponseDto checkEmail(@RequestBody CheckEmailRequestDto requestDto){
+        return userService.checkEmail(requestDto);
     }
 
 }
