@@ -1,9 +1,7 @@
 package com.sparta.actionboss.domain.post.controller;
 
 
-import com.sparta.actionboss.domain.post.dto.DeleteResponseDto;
-import com.sparta.actionboss.domain.post.dto.PostRequestDto;
-import com.sparta.actionboss.domain.post.dto.PostResponseDto;
+import com.sparta.actionboss.domain.post.dto.*;
 import com.sparta.actionboss.domain.post.service.PostService;
 import com.sparta.actionboss.global.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +25,7 @@ public class PostController {
 
     // 민원글 작성
     @PostMapping("")
-    public ResponseEntity<PostResponseDto> createPost(
+    public ResponseEntity<CreatePostResponseDto> createPost(
             @RequestPart(name = "post") PostRequestDto postRequestDto,
             @RequestPart(value = "images") List<MultipartFile> images,
             @AuthenticationPrincipal UserDetailsImpl userDetails
@@ -50,7 +48,7 @@ public class PostController {
 
     // 민원글 수정
     @PutMapping("/{postId}")
-    public ResponseEntity<PostResponseDto> updatePost(
+    public ResponseEntity<UpdatePostResponseDto> updatePost(
             @PathVariable Long postId,
             @RequestBody PostRequestDto postRequestDto,
             @AuthenticationPrincipal UserDetailsImpl userDetails

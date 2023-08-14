@@ -20,11 +20,11 @@ public class PostResponseDto {
     private LocalDateTime createdAt;
     private String nickname;
 
-    public PostResponseDto(Post post) {
+    public PostResponseDto(Post post, List<String> imageURLs) {
         this.postId = post.getPostId();
         this.title = post.getTitle();
         this.content = post.getContent();
-        this.imageUrlList = post.getImageUrls();
+        this.imageUrlList = imageURLs;
         this.address = post.getAddress();
         this.latitude = post.getLatitude();
         this.longitude = post.getLongitude();
