@@ -5,6 +5,7 @@ import com.amazonaws.services.s3.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -64,8 +65,7 @@ public class S3Service {
     }
 
     public Optional<File> convert(MultipartFile multipartFile) throws IOException {
-        String homeDirectory = System.getProperty("user.dir");
-        String targetDirectory = homeDirectory + "/src/main/resources/images/";
+        String targetDirectory = new ClassPathResource("static/images/").getFile().getAbsolutePath();
         File directory = new File(targetDirectory);
 
         if (!directory.exists()) {
@@ -74,7 +74,7 @@ public class S3Service {
         // 유니크한 파일명
         String uniqueFileName = UUID.randomUUID().toString() + "_" + multipartFile.getOriginalFilename();
 
-        File convertFile = new File(targetDirectory + uniqueFileName);
+        File convertFile = new File(targetDirectory + File.separator + uniqueFileName);
         if (convertFile.createNewFile()) {
             try (FileOutputStream fileOutputStream = new FileOutputStream(convertFile)) { // fileOutputStream 데이터 -> 바이트 스트림으로 저장
                 fileOutputStream.write(multipartFile.getBytes());
