@@ -67,7 +67,7 @@ public class WebSecurityConfig {
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/api/signup/**").permitAll()
-                        .requestMatchers("/api/login/**").permitAll()
+                        .requestMatchers("/api/login").permitAll()
                         .requestMatchers("/api/mailCheck").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()

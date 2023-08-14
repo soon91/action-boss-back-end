@@ -24,6 +24,7 @@ import java.util.UUID;
 public class S3Service {
 
     private final AmazonS3Client amazonS3Client;
+//    private final ResourceLoader resourceLoader;
 
     @Value("${cloud.aws.s3.bucket}")
     private String s3Bucket;
@@ -64,18 +65,18 @@ public class S3Service {
     }
 
     public Optional<File> convert(MultipartFile multipartFile) throws IOException {
-        String homeDirectory = System.getProperty("user.dir");
-        String targetDirectory = homeDirectory + "/src/main/resources/images/";
-        File directory = new File(targetDirectory);
-
-        if (!directory.exists()) {
-            directory.mkdirs();
-        }
+//        Resource resource = resourceLoader.getResource("classpath:static/images/");
+//        String targetDirectory = new ClassPathResource("static/images/").getFile().getAbsolutePath();
+//        File directory = resource.getFile();
+//
+//        if (!directory.exists()) {
+//            directory.mkdirs();
+//        }
         // 유니크한 파일명
-        String uniqueFileName = UUID.randomUUID().toString() + "_" + multipartFile.getOriginalFilename();
+        String uniqueFileName = UUID.randomUUID().toString()+ "_" + multipartFile.getOriginalFilename();
 
-        File convertFile = new File(targetDirectory + uniqueFileName);
-        if (convertFile.createNewFile()) {
+        File convertFile = File.createTempFile(uniqueFileName, ".tmp");
+        if (convertFile.exists()) {
             try (FileOutputStream fileOutputStream = new FileOutputStream(convertFile)) { // fileOutputStream 데이터 -> 바이트 스트림으로 저장
                 fileOutputStream.write(multipartFile.getBytes());
             }
