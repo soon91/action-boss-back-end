@@ -24,7 +24,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     public JwtAuthenticationFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
-        setFilterProcessesUrl("/api/login");
+        setFilterProcessesUrl("/api/auth/login");
     }
 
     @Override
@@ -54,6 +54,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         String token = jwtUtil.createToken(nickname, role);
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, token);
+        response.setStatus(201);
         response.setContentType("text/plain;charset=UTF-8");
         response.getWriter().write("로그인에 성공하였습니다.");
     }
@@ -63,6 +64,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         log.info("로그인 실패");
         response.setStatus(401);
         response.setContentType("text/plain;charset=UTF-8");
-        response.getWriter().write("회원을 찾을 수 없습니다.");
+        response.getWriter().write("로그인에 실패하였습니다.");
     }
 }
