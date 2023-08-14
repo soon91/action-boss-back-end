@@ -23,12 +23,18 @@ public class PostGetService {
 
     private final PostRepository postRepository;
 
-    public PostListAndTotalPageResponseDto getPostList(Integer page, Integer limit, String sortBy) {
+    public PostListAndTotalPageResponseDto getPostList(Integer page, Integer limit, String sortBy, boolean done) {
         Sort.Direction direction = Sort.Direction.DESC;
         Sort sort = Sort.by(direction, sortBy, "modifiedAt");
 
         Pageable pageable = PageRequest.of(page, limit, sort);
-        Page<Post> post = postRepository.findAll(pageable);
+        Page<Post> post;
+
+        if (done) {
+            post = postRepository.findByDoneTrue(pageable);
+        } else {
+            post = postRepository.findByDoneFalse(pageable);
+        }
 
         List<PostListResponseDto> postListResponseDtos = post.stream()
                 .map(a -> {
@@ -39,8 +45,6 @@ public class PostGetService {
                             a.getTitle(),
                             // TODO 좋아요갯수
                             a.getUser().getNickname(),
-                            a.getLatitude(),
-                            a.getLongitude(),
                             a.getAddress(),
                             a.getImageUrls().get(0)
 
