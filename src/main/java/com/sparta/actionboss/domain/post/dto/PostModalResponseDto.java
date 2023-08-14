@@ -15,7 +15,7 @@ public class PostModalResponseDto {
     public PostModalResponseDto(Post post) {
         this.postId = post.getPostId();
         this.title = post.getTitle();
-        this.thumbnail = post.getImageUrls().get(0);
+        this.thumbnail = post.getImageNames().get(0);
         this.address = post.getAddress();
         this.nickname = post.getUser().getNickname();
     }
