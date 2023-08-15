@@ -1,14 +1,14 @@
 package com.sparta.actionboss.domain.post.controller;
 
 
-import com.sparta.actionboss.domain.post.dto.*;
-import com.sparta.actionboss.domain.post.entity.Post;
+import com.sparta.actionboss.domain.post.dto.PostRequestDto;
+import com.sparta.actionboss.domain.post.dto.PostResponseDto;
 import com.sparta.actionboss.domain.post.service.PostService;
+import com.sparta.actionboss.global.response.CommonResponse;
 import com.sparta.actionboss.global.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -28,16 +28,15 @@ public class PostController {
 
     // 민원글 작성
     @PostMapping("")
-    public ResponseEntity<CreatePostResponseDto> createPost(
+    public ResponseEntity<CommonResponse> createPost(
             @RequestPart(name = "post") PostRequestDto postRequestDto,
             @RequestPart(value = "images") List<MultipartFile> images,
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) throws IOException {
-        return postService.createPost(
+        return new ResponseEntity<>(postService.createPost(
                 postRequestDto,
                 images,
-                userDetails.getUser()
-        );
+                userDetails.getUser()), HttpStatus.CREATED);
     }
 
     // 민원글 상세 조회 (postId)
@@ -51,29 +50,23 @@ public class PostController {
 
     // 민원글 수정
     @PutMapping("/{postId}")
-    public ResponseEntity<UpdatePostResponseDto> updatePost(
+    public ResponseEntity<CommonResponse> updatePost(
             @PathVariable Long postId,
             @RequestBody PostRequestDto postRequestDto,
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        return postService.updatePost(
-                postId,
-                postRequestDto,
-                userDetails.getUser()
-        );
-//        return new ResponseEntity<>(postService.updatePost(postId, postRequestDto, userDetails.getUser()));
+        return new ResponseEntity<>(postService.updatePost(postId, postRequestDto, userDetails.getUser()), HttpStatus.CREATED);
     }
 
 
     // 민원글 삭제
     @DeleteMapping("/{postId}")
-    public ResponseEntity<DeleteResponseDto> deletePost(
+    public ResponseEntity<CommonResponse> deletePost(
             @PathVariable Long postId,
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        return postService.deletePost(
+        return new ResponseEntity<>(postService.deletePost(
                 postId,
-                userDetails.getUser()
-        );
+                userDetails.getUser()), HttpStatus.NO_CONTENT);
     }
 }
