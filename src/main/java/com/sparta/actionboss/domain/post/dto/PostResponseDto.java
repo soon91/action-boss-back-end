@@ -19,6 +19,7 @@ public class PostResponseDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDateTime createdAt;
     private String nickname;
+    private int doneCount;
 
     public PostResponseDto(Post post, List<String> imageURLs) {
         this.postId = post.getPostId();
@@ -30,5 +31,6 @@ public class PostResponseDto {
         this.longitude = post.getLongitude();
         this.createdAt = post.getCreatedAt();
         this.nickname = post.getUser().getNickname();
+        this.doneCount = post.getPostDoneList().size();
     }
 }
