@@ -12,10 +12,10 @@ public class PostModalResponseDto {
     private String nickname;
     // TODO : likeCount
 
-    public PostModalResponseDto(Post post) {
+    public PostModalResponseDto(Post post,String imageUrl) {
         this.postId = post.getPostId();
         this.title = post.getTitle();
-        this.thumbnail = post.getImageNames().get(0);
+        this.thumbnail = imageUrl;
         this.address = post.getAddress();
         this.nickname = post.getUser().getNickname();
     }
