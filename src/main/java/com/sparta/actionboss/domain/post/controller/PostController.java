@@ -2,10 +2,13 @@ package com.sparta.actionboss.domain.post.controller;
 
 
 import com.sparta.actionboss.domain.post.dto.*;
+import com.sparta.actionboss.domain.post.entity.Post;
 import com.sparta.actionboss.domain.post.service.PostService;
 import com.sparta.actionboss.global.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -58,6 +61,7 @@ public class PostController {
                 postRequestDto,
                 userDetails.getUser()
         );
+//        return new ResponseEntity<>(postService.updatePost(postId, postRequestDto, userDetails.getUser()));
     }
 
 

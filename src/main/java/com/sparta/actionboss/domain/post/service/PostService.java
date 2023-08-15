@@ -8,6 +8,7 @@ import com.sparta.actionboss.domain.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,6 +58,10 @@ public class PostService {
     public ResponseEntity<PostResponseDto> getPost(Long postId) {
         Post post = findPost(postId);
         List<String> imageURLs = imageUrlPrefix(post.getImageNames(), postId);
+        if (post.isDone()) {
+            throw new IllegalArgumentException("이미 완료된 민원글입니다.");
+            // TODO: statusCode: 421 -> DESTINATION_LOCKED ; Handler
+        }
         return ResponseEntity.ok(new PostResponseDto(post, imageURLs));
     }
 
@@ -111,6 +116,9 @@ public class PostService {
     }
 
     private List<String> imageUrlPrefix(List<String> imageNames, Long postId) {
-        return imageNames.stream().map(imageName -> s3Url + "/images/" + postId + "/" + imageName).toList();
+        return imageNames
+                .stream()
+                .map(imageName -> s3Url + "/images/" + postId + "/" + imageName)
+                .toList();
     }
 }
