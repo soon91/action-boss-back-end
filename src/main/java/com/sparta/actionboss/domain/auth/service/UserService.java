@@ -7,6 +7,9 @@ import com.sparta.actionboss.domain.auth.entity.UserRoleEnum;
 import com.sparta.actionboss.domain.auth.repository.EmailRepository;
 import com.sparta.actionboss.domain.auth.repository.UserRepository;
 import com.sparta.actionboss.domain.auth.util.EmailUtil;
+import com.sparta.actionboss.global.exception.LoginException;
+import com.sparta.actionboss.global.exception.SignupException;
+import com.sparta.actionboss.global.exception.errorcode.ClientErrorCode;
 import com.sparta.actionboss.global.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,7 +40,7 @@ public class UserService {
 
         //닉네임 중복확인
         if(checkNickname(nickname)){
-            throw new IllegalArgumentException("이미 존재하는 닉네임입니다.");
+            throw new SignupException(ClientErrorCode.DUPLICATE_NICKNAME);
         }
 
         long emailId = checkEmailSuccessKey(requestDto.getEmail(), requestDto.getSuccessKey());
@@ -47,27 +50,28 @@ public class UserService {
         UserRoleEnum role = UserRoleEnum.USER;
         if (requestDto.isAdmin()) {
             if (!ADMIN_TOKEN.equals(requestDto.getAdminToken())) {
-                throw new IllegalArgumentException("관리자 암호가 일치하지 않습니다.");
+                throw new SignupException(ClientErrorCode.INVALID_ADMIN_TOKEN);
             }
             role = UserRoleEnum.ADMIN;
         }
 
-        // 사용자 등록
         User user = new User(nickname, password, email, role);
-        userRepository.save(user);
+        User savedUser =  userRepository.save(user);
+        if(savedUser == null){
+            throw new SignupException(ClientErrorCode.SIGNUP_FAILED);
+        }
     }
 
     //로그인
     public LoginResponseDto login(LoginRequestDto requestDto){
         User user = userRepository.findByEmail(requestDto.getEmail()).orElseThrow(() ->
-                new IllegalArgumentException("가입되지 않은 이메일입니다."));
+                new LoginException(ClientErrorCode.NO_ACCOUNT));
         if(!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())){
-            throw new IllegalArgumentException("잘못된 비밀번호 입니다.");
+            throw new LoginException(ClientErrorCode.INVALID_PASSWORDS);
         }
         String accessToken = jwtUtil.createToken(user.getEmail(), user.getRole());
         TokenDto tokenDto = new TokenDto(accessToken);
         return new LoginResponseDto(tokenDto.getAccessToken());
-
     }
 
     //닉네임 중복확인
@@ -75,21 +79,26 @@ public class UserService {
     public userResponseDto checkNickname(CheckNicknameRequestDto requestDto) {
         String nickname = requestDto.getNickname();
         if (checkNickname(nickname)) {
-            return new userResponseDto("이미 존재하는 닉네임입니다.");
-        } else {
-            return new userResponseDto("사용 가능한 닉네임입니다.");
+            throw new SignupException(ClientErrorCode.DUPLICATE_NICKNAME);
         }
+            return new userResponseDto("사용 가능한 닉네임입니다.");
     }
 
     @Transactional
     public userResponseDto sendEmail(SendEmailRequestDto requestDto) {
         Optional<Email> email = emailRepository.findByEmail(requestDto.getEmail());
 
-        userResponseDto response = new userResponseDto("이메일 인증 코드을 보냈습니다. 확인해 주시길 바랍니다.");
+        userResponseDto response = new userResponseDto("이메일 인증 코드을 보냈습니다.");
 
         String successKey = emailUtil.makeRandomNumber();
 
-        emailUtil.sendEmail(requestDto.getEmail(), successKey);
+        try{
+            emailUtil.sendEmail(requestDto.getEmail(), successKey);
+        } catch (SignupException e) {
+            throw new SignupException(ClientErrorCode.EMAIL_SENDING_FAILED);
+        }
+
+
         if (email.isEmpty()) {
             emailRepository.save(Email.builder()
                     .email(requestDto.getEmail())
@@ -97,7 +106,7 @@ public class UserService {
                     .build());
             return response;
         }
-        //위에서 null 체크
+
         email.get().changeSuccessKey(successKey);
 
         return response;
@@ -111,9 +120,9 @@ public class UserService {
 
     private long checkEmailSuccessKey(String requestEmail, String successKey) {
         Email email = emailRepository.findByEmail(requestEmail).orElseThrow(
-                ()-> new IllegalArgumentException("존재하지 않는 이메일입니다."));
+                ()-> new LoginException(ClientErrorCode.NO_ACCOUNT));
         if(!email.getSuccessKey().equals(successKey)){
-            throw new IllegalArgumentException("이메일 인증에 실패하였습니다.");
+            throw new SignupException(ClientErrorCode.EMAIL_AUTHENTICATION_FAILED);
         }
         return email.getId();
     }
