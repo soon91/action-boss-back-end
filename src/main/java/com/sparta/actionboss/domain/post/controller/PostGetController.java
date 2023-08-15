@@ -1,10 +1,13 @@
 package com.sparta.actionboss.domain.post.controller;
 
+import com.sparta.actionboss.domain.post.dto.MapListResponseDto;
 import com.sparta.actionboss.domain.post.dto.PostListAndTotalPageResponseDto;
 import com.sparta.actionboss.domain.post.dto.PostModalResponseDto;
 import com.sparta.actionboss.domain.post.service.PostGetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,5 +31,13 @@ public class PostGetController {
     public PostModalResponseDto getSelectPost(@PathVariable Long postId) {
         PostModalResponseDto postModalResopnseDto = postGetService.getModalPost(postId);
         return postModalResopnseDto;
+    }
+
+    @GetMapping("/main/map")
+    public List<MapListResponseDto> getMapList(
+            @RequestParam boolean isdone
+    ) {
+        List<MapListResponseDto> mapListResponseDto = postGetService.getMapList(isdone);
+        return mapListResponseDto;
     }
 }
