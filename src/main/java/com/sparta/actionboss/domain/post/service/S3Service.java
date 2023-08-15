@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -28,7 +27,10 @@ public class S3Service {
 
 
     // 파일을 S3에 업로드
-    public List<String> upload(List<MultipartFile> multipartFiles, String dirName) throws IOException {
+    public List<String> upload(
+            List<MultipartFile> multipartFiles,
+            String dirName
+    ) throws IOException {
         List<String> fileNames = new ArrayList<>();
 
         for (MultipartFile multipartFile : multipartFiles) {
@@ -56,7 +58,9 @@ public class S3Service {
 
     // 실제로 S3로 업로드
     private String putS3(File uploadFile, String s3FileName) {
-        amazonS3Client.putObject(new PutObjectRequest(s3Bucket, s3FileName, uploadFile).withCannedAcl(CannedAccessControlList.PublicRead));
+        amazonS3Client.putObject(
+                new PutObjectRequest(s3Bucket, s3FileName, uploadFile)
+                        .withCannedAcl(CannedAccessControlList.PublicRead));
         return amazonS3Client.getUrl(s3Bucket, s3FileName).toString();
     }
 
@@ -68,23 +72,23 @@ public class S3Service {
             log.error("originalFileName == null");
             return Optional.empty();
         }
-        String fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
+        String fileExtension = originalFileName
+                .substring(originalFileName.lastIndexOf("."));
 
-        String uniqueFileName = UUID.randomUUID() + "/" + originalFileName.substring(0, originalFileName.lastIndexOf("-"));
-
+        String fileName = File.separator + originalFileName
+                .substring(0, originalFileName.lastIndexOf(".")) + "-";
         // 유니크한 파일명 -> createTempFile 중복방지: 자체적으로 난수 생성
-        File convertFile = File.createTempFile(uniqueFileName, fileExtension);
-
-        String fileName = convertFile.getName();
-        System.out.println(fileName);
+        File convertFile = File.createTempFile(fileName, fileExtension);
 
         if (convertFile.exists()) {
-            try (FileOutputStream fileOutputStream = new FileOutputStream(convertFile)) { // fileOutputStream 데이터 -> 바이트 스트림으로 저장
+            try (FileOutputStream fileOutputStream = new FileOutputStream(convertFile)) {
+                // fileOutputStream 데이터 -> 바이트 스트림으로 저장
                 fileOutputStream.write(multipartFile.getBytes());
             }
             return Optional.of(convertFile);
         }
-        throw new IOException("파일 전환에 실패했습니다: " + multipartFile.getOriginalFilename() + " (경로: " + convertFile.getAbsolutePath() + ")");
+        throw new IOException("파일 전환에 실패했습니다: " + multipartFile.getOriginalFilename()
+                + " (경로: " + convertFile.getAbsolutePath() + ")");
     }
 
     public void deleteFolder(String requestFolderName) {
