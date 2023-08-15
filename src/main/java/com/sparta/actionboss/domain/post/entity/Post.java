@@ -66,7 +66,8 @@ public class Post extends Timestamped {
     public void setNames(List<String> imageNames) {
         this.imageNames = imageNames;
     }
-    public void setDone (boolean done) {
+
+    public void setDone(boolean done) {
         this.done = done;
     }
 }
