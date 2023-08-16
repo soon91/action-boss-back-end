@@ -1,6 +1,6 @@
-package com.sparta.actionboss.domain.done.controller;
+package com.sparta.actionboss.domain.post.controller;
 
-import com.sparta.actionboss.domain.done.service.PostDoneService;
+import com.sparta.actionboss.domain.post.service.PostDoneService;
 import com.sparta.actionboss.global.response.CommonResponse;
 import com.sparta.actionboss.global.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ public class PostDoneController {
     private final PostDoneService postDoneService;
 
     @PostMapping("{postId}/done")
-    public void createLike(@PathVariable Long postId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        postDoneService.createDone(postId, userDetails.getUser());
+    public ResponseEntity<CommonResponse> createLike(@PathVariable Long postId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return new ResponseEntity<>(postDoneService.createDone(postId, userDetails.getUser()), HttpStatus.OK);
     }
 }
