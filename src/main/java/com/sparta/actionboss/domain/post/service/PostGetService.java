@@ -7,6 +7,9 @@ import com.sparta.actionboss.domain.post.dto.PostModalResponseDto;
 import com.sparta.actionboss.domain.post.entity.Post;
 import com.sparta.actionboss.domain.post.repository.AgreeRepository;
 import com.sparta.actionboss.domain.post.repository.PostRepository;
+import com.sparta.actionboss.global.exception.PostException;
+import com.sparta.actionboss.global.exception.errorcode.ClientErrorCode;
+import com.sparta.actionboss.global.response.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.*;
@@ -16,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static com.sparta.actionboss.global.response.SuccessMessage.GET_POST_MESSAGE;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +33,7 @@ public class PostGetService {
     private final PostRepository postRepository;
     private final AgreeRepository agreeRepository;
 
-    public PostListAndTotalPageResponseDto getPostList(Integer page, Integer limit, String sortBy, boolean done,
+    public CommonResponse<PostListAndTotalPageResponseDto> getPostList(Integer page, Integer limit, String sortBy, boolean done,
              Double northLatitude, Double eastLongitude, Double southLatitude, Double westLongitude) {
         Sort.Direction direction = Sort.Direction.DESC;
         Sort sort = Sort.by(direction, sortBy, "createdAt");
@@ -58,12 +63,12 @@ public class PostGetService {
                 })
                 .collect(Collectors.toList());
 
-        return new PostListAndTotalPageResponseDto(postListResponseDtos, post.getTotalPages(), page);
+        return new CommonResponse<>(GET_POST_MESSAGE, new PostListAndTotalPageResponseDto<>(postListResponseDtos, post.getTotalPages(), page));
     }
 
-    public PostModalResponseDto getModalPost(Long postId) {
+    public CommonResponse<PostModalResponseDto> getModalPost(Long postId) {
         Post findPost = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 게시글을 찾을 수 없습니다."));
+                .orElseThrow(() -> new PostException(ClientErrorCode.NO_POST));
 
         int agreeCount = agreeRepository.findByPost(findPost).size();
         if (Objects.isNull(agreeCount)) {
@@ -72,10 +77,10 @@ public class PostGetService {
 
         String imageUrl = s3Url + "/images/" + postId + "/" + findPost.getImageNames().get(0);
 
-        return new PostModalResponseDto(findPost, imageUrl, agreeCount);
+        return new CommonResponse<>(GET_POST_MESSAGE, new PostModalResponseDto(findPost, imageUrl, agreeCount));
     }
 
-    public List<MapListResponseDto> getMapList(boolean done,
+    public CommonResponse<List<MapListResponseDto>> getMapList(boolean done,
              Double northLatitude, Double eastLongitude, Double southLatitude, Double westLongitude) {
         List<Post> post;
 
@@ -98,7 +103,7 @@ public class PostGetService {
                 ))
                 .collect(Collectors.toList());
 
-        return mapListResponseDto;
+        return new CommonResponse<>(GET_POST_MESSAGE, mapListResponseDto);
     }
 
     private boolean isWithinCoordinates(Post post, Double north, Double east, Double south, Double west) {

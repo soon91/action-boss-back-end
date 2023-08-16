@@ -4,7 +4,10 @@ import com.sparta.actionboss.domain.post.dto.MapListResponseDto;
 import com.sparta.actionboss.domain.post.dto.PostListAndTotalPageResponseDto;
 import com.sparta.actionboss.domain.post.dto.PostModalResponseDto;
 import com.sparta.actionboss.domain.post.service.PostGetService;
+import com.sparta.actionboss.global.response.CommonResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,7 +20,7 @@ public class PostGetController {
     private final PostGetService postGetService;
 
     @GetMapping("/main")
-    public PostListAndTotalPageResponseDto getPostList(
+    public ResponseEntity<CommonResponse<PostListAndTotalPageResponseDto>> getPostList(
             @RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam Integer size,
             @RequestParam String sort,
@@ -27,27 +30,23 @@ public class PostGetController {
             @RequestParam Double southlatitude,
             @RequestParam Double westlongitude
     ) {
-        PostListAndTotalPageResponseDto postListAndTotalPageResponseDto = postGetService.getPostList
-                (page, size, sort, isdone, northlatitude, eastlongitude, southlatitude, westlongitude);
-        return postListAndTotalPageResponseDto;
+        return new ResponseEntity<>(postGetService.getPostList
+                (page, size, sort, isdone, northlatitude, eastlongitude, southlatitude, westlongitude), HttpStatus.OK);
     }
 
     @GetMapping("/main/{postId}")
-    public PostModalResponseDto getSelectPost(@PathVariable Long postId) {
-        PostModalResponseDto postModalResopnseDto = postGetService.getModalPost(postId);
-        return postModalResopnseDto;
+    public ResponseEntity<CommonResponse<PostModalResponseDto>> getSelectPost(@PathVariable Long postId) {
+        return new ResponseEntity<>(postGetService.getModalPost(postId), HttpStatus.OK);
     }
 
     @GetMapping("/main/map")
-    public List<MapListResponseDto> getMapList(
+    public ResponseEntity<CommonResponse<List<MapListResponseDto>>> getMapList(
             @RequestParam boolean isdone,
             @RequestParam Double northlatitude,
             @RequestParam Double eastlongitude,
             @RequestParam Double southlatitude,
             @RequestParam Double westlongitude
     ) {
-        List<MapListResponseDto> mapListResponseDto = postGetService.getMapList
-                (isdone, northlatitude, eastlongitude, southlatitude, westlongitude);
-        return mapListResponseDto;
+        return new ResponseEntity<>(postGetService.getMapList(isdone, northlatitude, eastlongitude, southlatitude, westlongitude), HttpStatus.OK);
     }
 }

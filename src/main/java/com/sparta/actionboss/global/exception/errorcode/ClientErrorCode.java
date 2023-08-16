@@ -20,9 +20,9 @@ public enum ClientErrorCode {
     NO_AGREE(HttpStatus.NOT_FOUND, "동의해요에 대한 정보가 존재하지 않습니다."),
 
     // Post
-    UPLOAD_NO_IMAGE(HttpStatus.BAD_REQUEST, "사진을 1장 이상 업로드 해주세요."),
+    UPLOAD_NO_IMAGE(HttpStatus.BAD_REQUEST, "이미지를 1장 이상 업로드 해주세요."),
     UPLOAD_MAXIMUM_IMAGE(HttpStatus.BAD_REQUEST, "최대 3장의 이미지만 업로드할 수 있습니다."),
-    ALREADY_DONE_POST(HttpStatus.DESTINATION_LOCKED, "이미 완료된 민원글입니다."),
+    ALREADY_DONE_POST(HttpStatus.I_AM_A_TEAPOT, "이미 완료된 민원글입니다."),
     NO_PERMISSION_UPDATE(HttpStatus.FORBIDDEN, "이 게시글을 변경할 수 있는 권한이 없습니다."),
     NO_PERMISSION_DELETE(HttpStatus.FORBIDDEN, "이 게시글을 삭제할 수 있는 권한이 없습니다."),
     NO_POST(HttpStatus.NOT_FOUND, "존재하지 않는 게시글입니다."),
