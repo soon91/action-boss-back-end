@@ -14,7 +14,11 @@ public enum ClientErrorCode {
     SIGNUP_FAILED(HttpStatus.BAD_REQUEST, "회원가입에 실패하였습니다."),
 
     NO_ACCOUNT(HttpStatus.UNAUTHORIZED, "가입되지 않은 이메일입니다."),
-    INVALID_PASSWORDS(HttpStatus.UNAUTHORIZED, "잘못된 비밀번호 입니다.")
+    INVALID_PASSWORDS(HttpStatus.UNAUTHORIZED, "잘못된 비밀번호 입니다."),
+
+    NO_POST(HttpStatus.NOT_FOUND, "존재하지 않는 게시글입니다."),
+
+    NO_AGREE(HttpStatus.NOT_FOUND, "동의해요에 대한 정보가 존재하지 않습니다.")
     ;
 
     private final HttpStatus statusCode;
