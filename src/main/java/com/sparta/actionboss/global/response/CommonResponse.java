@@ -1,14 +1,20 @@
 package com.sparta.actionboss.global.response;
 
-import com.sparta.actionboss.domain.post.dto.PostResponseDto;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import org.springframework.http.HttpStatus;
+import lombok.Getter;
 
-import java.util.logging.XMLFormatter;
-
-@Data
+@Getter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @AllArgsConstructor
-public class CommonResponse{
+public class CommonResponse<T> {
     private String msg;
+    private T data;
+
+    public CommonResponse(String msg){
+        this.msg = msg;
+    }
+    public CommonResponse(T data){
+        this.data = data;
+    }
 }
