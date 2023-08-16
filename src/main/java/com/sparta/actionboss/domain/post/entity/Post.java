@@ -7,6 +7,7 @@ import com.sparta.actionboss.global.entity.Timestamped;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Formula;
 
 import java.util.List;
 
@@ -40,6 +41,9 @@ public class Post extends Timestamped {
 
     @Column(nullable = false)
     private Double longitude;
+
+    @Formula("(SELECT COUNT(*) FROM Agree a WHERE a.post_id = post_id)")
+    private int agreeCount;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
