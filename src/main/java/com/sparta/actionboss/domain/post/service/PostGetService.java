@@ -5,6 +5,7 @@ import com.sparta.actionboss.domain.post.dto.PostListAndTotalPageResponseDto;
 import com.sparta.actionboss.domain.post.dto.PostListResponseDto;
 import com.sparta.actionboss.domain.post.dto.PostModalResponseDto;
 import com.sparta.actionboss.domain.post.entity.Post;
+import com.sparta.actionboss.domain.post.repository.AgreeRepository;
 import com.sparta.actionboss.domain.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,6 +26,7 @@ public class PostGetService {
     private String s3Url;
 
     private final PostRepository postRepository;
+    private final AgreeRepository agreeRepository;
 
     public PostListAndTotalPageResponseDto getPostList(Integer page, Integer limit, String sortBy, boolean done,
              Double northLatitude, Double eastLongitude, Double southLatitude, Double westLongitude) {
@@ -37,22 +40,23 @@ public class PostGetService {
 
         List<PostListResponseDto> postListResponseDtos = post.stream()
                 .map(a -> {
-                    // TODO 좋아요갯수 구하는 로직
+                    int agreeCount = agreeRepository.findByPost(a).size();
+                    if (Objects.isNull(agreeCount)) {
+                        agreeCount = 0;
+                    }
 
                     String imageUrl = s3Url + "/images/" + a.getPostId() + "/" + a.getImageNames().get(0);
 
                     return new PostListResponseDto(
                             a.getPostId(),
                             a.getTitle(),
-                            // TODO 좋아요갯수
+                            agreeCount,
                             a.getUser().getNickname(),
                             a.getAddress(),
                             imageUrl
-
                     );
                 })
                 .collect(Collectors.toList());
-
 
         return new PostListAndTotalPageResponseDto(postListResponseDtos, post.getTotalPages(), page);
     }
@@ -60,9 +64,15 @@ public class PostGetService {
     public PostModalResponseDto getModalPost(Long postId) {
         Post findPost = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글을 찾을 수 없습니다."));
+
+        int agreeCount = agreeRepository.findByPost(findPost).size();
+        if (Objects.isNull(agreeCount)) {
+            agreeCount = 0;
+        }
+
         String imageUrl = s3Url + "/images/" + postId + "/" + findPost.getImageNames().get(0);
 
-        return new PostModalResponseDto(findPost, imageUrl);
+        return new PostModalResponseDto(findPost, imageUrl, agreeCount);
     }
 
     public List<MapListResponseDto> getMapList(boolean done,
