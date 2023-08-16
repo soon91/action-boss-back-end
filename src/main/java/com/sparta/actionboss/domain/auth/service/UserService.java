@@ -10,6 +10,7 @@ import com.sparta.actionboss.domain.auth.util.EmailUtil;
 import com.sparta.actionboss.global.exception.LoginException;
 import com.sparta.actionboss.global.exception.SignupException;
 import com.sparta.actionboss.global.exception.errorcode.ClientErrorCode;
+import com.sparta.actionboss.global.response.CommonResponse;
 import com.sparta.actionboss.global.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+
+import static com.sparta.actionboss.global.response.SuccessMessage.*;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +36,8 @@ public class UserService {
     private final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
 
     //회원가입
-    public void signup(SignupRequestDto requestDto) {
+    @Transactional
+    public CommonResponse signup(SignupRequestDto requestDto) {
         String nickname = requestDto.getNickname();
         String email = requestDto.getEmail();
         String password = passwordEncoder.encode(requestDto.getPassword());
@@ -60,10 +64,25 @@ public class UserService {
         if(savedUser == null){
             throw new SignupException(ClientErrorCode.SIGNUP_FAILED);
         }
+        return new CommonResponse(SIGNUP_SUCCESS, null);
     }
 
+    //    TODO : token이 안넘어 갈 경우를 위해 남겨둠
+//    //로그인
+//    public LoginResponseDto login(LoginRequestDto requestDto){
+//        User user = userRepository.findByEmail(requestDto.getEmail()).orElseThrow(() ->
+//                new LoginException(ClientErrorCode.NO_ACCOUNT));
+//        if(!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())){
+//            throw new LoginException(ClientErrorCode.INVALID_PASSWORDS);
+//        }
+//        String accessToken = jwtUtil.createToken(user.getEmail(), user.getRole());
+//        TokenDto tokenDto = new TokenDto(accessToken);
+//        return new LoginResponseDto(tokenDto.getAccessToken());
+//    }
+
     //로그인
-    public LoginResponseDto login(LoginRequestDto requestDto){
+    @Transactional
+    public CommonResponse<LoginResponseDto> login(LoginRequestDto requestDto){
         User user = userRepository.findByEmail(requestDto.getEmail()).orElseThrow(() ->
                 new LoginException(ClientErrorCode.NO_ACCOUNT));
         if(!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())){
@@ -71,24 +90,25 @@ public class UserService {
         }
         String accessToken = jwtUtil.createToken(user.getEmail(), user.getRole());
         TokenDto tokenDto = new TokenDto(accessToken);
-        return new LoginResponseDto(tokenDto.getAccessToken());
+        LoginResponseDto responseDto = new LoginResponseDto(tokenDto.getAccessToken());
+        return new CommonResponse(LOGIN_SUCCESS, responseDto);
     }
 
     //닉네임 중복확인
     @Transactional(readOnly = true)
-    public userResponseDto checkNickname(CheckNicknameRequestDto requestDto) {
+    public CommonResponse checkNickname(CheckNicknameRequestDto requestDto) {
         String nickname = requestDto.getNickname();
         if (checkNickname(nickname)) {
             throw new SignupException(ClientErrorCode.DUPLICATE_NICKNAME);
         }
-            return new userResponseDto("사용 가능한 닉네임입니다.");
+            return new CommonResponse(AVAILABLE_NICKNAME,null);
     }
 
     @Transactional
-    public userResponseDto sendEmail(SendEmailRequestDto requestDto) {
+    public CommonResponse sendEmail(SendEmailRequestDto requestDto) {
         Optional<Email> email = emailRepository.findByEmail(requestDto.getEmail());
 
-        userResponseDto response = new userResponseDto("이메일 인증 코드을 보냈습니다.");
+        CommonResponse response = new CommonResponse(SEND_EMAIL_CODE,null);
 
         String successKey = emailUtil.makeRandomNumber();
 
@@ -113,9 +133,9 @@ public class UserService {
     }
 
     @Transactional
-    public userResponseDto checkEmail(CheckEmailRequestDto requestDto) {
+    public CommonResponse checkEmail(CheckEmailRequestDto requestDto) {
         checkEmailSuccessKey(requestDto.getEmail(), requestDto.getSuccessKey());
-        return new userResponseDto("이메일 인증이 완료되었습니다.");
+        return new CommonResponse(EMAIL_AUTHENTICATE_SUCCESS,null);
     }
 
     private long checkEmailSuccessKey(String requestEmail, String successKey) {
