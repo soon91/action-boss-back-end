@@ -41,7 +41,7 @@ public class Post extends Timestamped {
     @Column(nullable = false)
     private Double longitude;
 
-    @Formula("(SELECT COUNT(*) FROM Agree a WHERE a.post_id = post_id)")
+    @Formula("(SELECT COUNT(*) FROM agree a WHERE a.post_id = post_id)")
     private int agreeCount;
 
     @ManyToOne(fetch = FetchType.LAZY)
