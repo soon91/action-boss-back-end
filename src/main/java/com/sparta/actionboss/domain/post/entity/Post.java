@@ -1,7 +1,6 @@
 package com.sparta.actionboss.domain.post.entity;
 
 import com.sparta.actionboss.domain.auth.entity.User;
-import com.sparta.actionboss.domain.done.entity.PostDone;
 import com.sparta.actionboss.domain.post.dto.PostRequestDto;
 import com.sparta.actionboss.global.entity.Timestamped;
 import jakarta.persistence.*;
@@ -47,6 +46,9 @@ public class Post extends Timestamped {
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
     private List<PostDone> postDoneList;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
+    private List<Agree> postAgreeList;
 
     public Post(PostRequestDto postRequestDto, List<String> imageNames, User user) {
         this.title = postRequestDto.getTitle();
