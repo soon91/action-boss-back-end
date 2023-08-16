@@ -10,15 +10,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @Slf4j
@@ -38,21 +35,15 @@ public class PostController {
     ) throws IOException {
         return new ResponseEntity<>(postService.createPost(
                 postRequestDto,
-                images,
-                userDetails.getUser()), HttpStatus.CREATED);
+                images, userDetails.getUser()),
+                HttpStatus.CREATED);
     }
 
     // 민원글 상세 조회 (postId)
     @GetMapping("/{postId}")
-    public ResponseEntity<PostResponseDto> getPost(@PathVariable Long postId) {
-        UserDetailsImpl userDetails = null;
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication.getPrincipal() instanceof UserDetailsImpl) {
-            userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        }
-        return postService.getPost(postId, Optional.ofNullable(userDetails));
+    public ResponseEntity<CommonResponse<PostResponseDto>> getPost(@PathVariable Long postId) {
+        return new ResponseEntity<>(postService.getPost(postId), HttpStatus.OK);
     }
-
 
 
     // 민원글 수정

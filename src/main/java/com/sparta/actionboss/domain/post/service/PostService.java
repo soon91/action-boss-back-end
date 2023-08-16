@@ -7,12 +7,15 @@ import com.sparta.actionboss.domain.post.dto.PostRequestDto;
 import com.sparta.actionboss.domain.post.dto.PostResponseDto;
 import com.sparta.actionboss.domain.post.entity.Post;
 import com.sparta.actionboss.domain.post.repository.PostRepository;
+import com.sparta.actionboss.global.exception.PostException;
+import com.sparta.actionboss.global.exception.errorcode.ClientErrorCode;
 import com.sparta.actionboss.global.response.CommonResponse;
 import com.sparta.actionboss.global.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,8 +24,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
-import static com.sparta.actionboss.global.response.SuccessMessage.CREATE_POST_MESSAGE;
-import static com.sparta.actionboss.global.response.SuccessMessage.UPDATE_POST_MESSAGE;
+import static com.sparta.actionboss.global.response.SuccessMessage.*;
 
 @Service
 @Slf4j
@@ -44,11 +46,12 @@ public class PostService {
             List<MultipartFile> images,
             User user
     ) throws IOException {
-        if (images == null || images.isEmpty() || images.stream().allMatch(image -> image.isEmpty())) {
-            throw new IllegalArgumentException("사진을 1장 이상 업로드 해주세요.");
+
+        if (limitImage(images)) {
+            throw new PostException(ClientErrorCode.UPLOAD_NO_IMAGE);
         }
         if (images.size() > MAXIMUM_IMAGES) {
-            throw new IllegalArgumentException("최대 " + MAXIMUM_IMAGES + "장의 이미지만 업로드할 수 있습니다.");
+            throw new PostException(ClientErrorCode.UPLOAD_MAXIMUM_IMAGE);
         }
         List<String> imageNames = images.stream().map(MultipartFile::getOriginalFilename).toList();
 
@@ -63,23 +66,23 @@ public class PostService {
         return new CommonResponse(CREATE_POST_MESSAGE);
     }
 
-    public ResponseEntity<PostResponseDto> getPost(Long postId, Optional<UserDetailsImpl> userDetails) {
+    public CommonResponse<PostResponseDto> getPost(Long postId) {
+        Optional<UserDetailsImpl> userDetails = Optional.ofNullable(getUserDetails());
         Post post = findPost(postId);
         List<String> imageURLs = imageUrlPrefix(post.getImageNames(), postId);
         boolean done = false;
         boolean owner = false;
 
-        if(userDetails.isPresent()) {
+        if (userDetails.isPresent()) {
             User loginUser = userDetails.get().getUser();
             done = postDoneRepository.findByPostAndUser(post, loginUser).isPresent();
             owner = post.getUser().getNickname().equals(loginUser.getNickname());
         }
         if (post.isDone()) {
-            throw new IllegalArgumentException("이미 완료된 민원글입니다.");
-            // TODO: statusCode: 421 -> DESTINATION_LOCKED ; Handler
+            throw new PostException(ClientErrorCode.ALREADY_DONE_POST);
         }
 
-        return ResponseEntity.ok(new PostResponseDto(post, imageURLs, done, owner));
+        return new CommonResponse<>(GET_POST_MESSAGE, new PostResponseDto(post, imageURLs, done, owner));
     }
 
     @Transactional
@@ -92,7 +95,7 @@ public class PostService {
         if (hasAuthority(post, user)) {
             post.update(postRequestDto);
         } else {
-            throw new IllegalArgumentException("이 게시글을 변경할 수 있는 권한이 없습니다.");
+            throw new PostException(ClientErrorCode.NO_PERMISSION_UPDATE);
         }
         List<String> imageURLs = imageUrlPrefix(post.getImageNames(), postId);
         return new CommonResponse(UPDATE_POST_MESSAGE);
@@ -112,18 +115,19 @@ public class PostService {
                 s3Service.deleteFolder(postId.toString());
             }
         } else {
-            throw new IllegalArgumentException("이 게시글을 삭제할 수 있는 권한이 없습니다.");
+            throw new PostException(ClientErrorCode.NO_PERMISSION_DELETE);
         }
 
-        return new CommonResponse(UPDATE_POST_MESSAGE);
+        return new CommonResponse(DELETE_POST_MESSAGE);
     }
 
-
+    // 해당 게시글 찾기
     private Post findPost(Long postId) {
         return postRepository.findById(postId).orElseThrow(
-                () -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
+                () -> new PostException(ClientErrorCode.NO_POST));
     }
 
+    // 권한 확인
     private boolean hasAuthority(Post post, User user) {
         return post.getUser()
                 .getNickname()
@@ -132,10 +136,30 @@ public class PostService {
                 user.getRole().equals(UserRoleEnum.ADMIN);
     }
 
+    private boolean limitImage(List<MultipartFile> images) {
+        return images == null
+                ||
+                images.isEmpty()
+                ||
+                images.stream().allMatch(image -> image.isEmpty());
+    }
+
+
+    // 이미지 파일명에 URL Prefix 붙이기
     private List<String> imageUrlPrefix(List<String> imageNames, Long postId) {
         return imageNames
                 .stream()
                 .map(imageName -> s3Url + "/images/" + postId + "/" + imageName)
                 .toList();
+    }
+
+    // 로그인을 하지 않을 경우, 로그인을 한 경우 -> UserDetailsImpl 이 들어오는 경우, 들어오지 않는 경우
+    private UserDetailsImpl getUserDetails() {
+        UserDetailsImpl userDetails = null;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication.getPrincipal() instanceof UserDetailsImpl) {
+            userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        }
+        return userDetails;
     }
 }

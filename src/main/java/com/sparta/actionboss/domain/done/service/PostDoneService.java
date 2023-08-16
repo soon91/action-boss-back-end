@@ -5,6 +5,8 @@ import com.sparta.actionboss.domain.done.entity.PostDone;
 import com.sparta.actionboss.domain.done.repository.PostDoneRepository;
 import com.sparta.actionboss.domain.post.entity.Post;
 import com.sparta.actionboss.domain.post.repository.PostRepository;
+import com.sparta.actionboss.global.exception.PostException;
+import com.sparta.actionboss.global.exception.errorcode.ClientErrorCode;
 import com.sparta.actionboss.global.response.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,7 +27,7 @@ public class PostDoneService {
     @Transactional
     public void createDone (Long postId, User user) {
         Post post = postRepository.findById(postId).orElseThrow(
-                () -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
+                () -> new PostException(ClientErrorCode.NO_POST));
         Optional<PostDone> existingDone = postDoneRepository.findByPostAndUser(post, user);
         if (existingDone.isEmpty()) {
             PostDone postDone = new PostDone(user, post);
