@@ -19,7 +19,7 @@ public class PostDoneController {
     private final PostDoneService postDoneService;
 
     @PostMapping("{postId}/done")
-    public ResponseEntity<CommonResponse> createLike(@PathVariable Long postId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return new ResponseEntity<>(postDoneService.createDone(postId, userDetails.getUser()), HttpStatus.OK);
+    public void createLike(@PathVariable Long postId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        postDoneService.createDone(postId, userDetails.getUser());
     }
 }

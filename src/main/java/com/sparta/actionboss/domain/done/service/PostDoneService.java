@@ -23,21 +23,20 @@ public class PostDoneService {
     private static final int MAXIMUM_DONE = 5;    // 해결했어요 최대 개수
 
     @Transactional
-    public CommonResponse createDone (Long postId, User user) {
+    public void createDone (Long postId, User user) {
         Post post = postRepository.findById(postId).orElseThrow(
                 () -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
         Optional<PostDone> existingDone = postDoneRepository.findByPostAndUser(post, user);
         if (existingDone.isEmpty()) {
             PostDone postDone = new PostDone(user, post);
             postDoneRepository.save(postDone);
+
             // 해결했어요 5개 되면 done = true
             if (post.getPostDoneList().size() >= MAXIMUM_DONE) {
                 post.setDone(true);
             }
-            return new CommonResponse(CREATE_DONE_MESSAGE);
         } else {
             postDoneRepository.delete(existingDone.get());
-            return new CommonResponse(CANCEL_DONE_MESSAGE);
         }
     }
 }
