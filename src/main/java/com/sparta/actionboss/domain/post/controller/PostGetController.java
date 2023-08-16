@@ -21,9 +21,14 @@ public class PostGetController {
             @RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam Integer size,
             @RequestParam String sort,
-            @RequestParam boolean isdone
+            @RequestParam boolean isdone,
+            @RequestParam Double northlatitude,
+            @RequestParam Double eastlongitude,
+            @RequestParam Double southlatitude,
+            @RequestParam Double westlongitude
     ) {
-        PostListAndTotalPageResponseDto postListAndTotalPageResponseDto = postGetService.getPostList(page, size, sort, isdone);
+        PostListAndTotalPageResponseDto postListAndTotalPageResponseDto = postGetService.getPostList
+                (page, size, sort, isdone, northlatitude, eastlongitude, southlatitude, westlongitude);
         return postListAndTotalPageResponseDto;
     }
 
@@ -35,9 +40,14 @@ public class PostGetController {
 
     @GetMapping("/main/map")
     public List<MapListResponseDto> getMapList(
-            @RequestParam boolean isdone
+            @RequestParam boolean isdone,
+            @RequestParam Double northlatitude,
+            @RequestParam Double eastlongitude,
+            @RequestParam Double southlatitude,
+            @RequestParam Double westlongitude
     ) {
-        List<MapListResponseDto> mapListResponseDto = postGetService.getMapList(isdone);
+        List<MapListResponseDto> mapListResponseDto = postGetService.getMapList
+                (isdone, northlatitude, eastlongitude, southlatitude, westlongitude);
         return mapListResponseDto;
     }
 }
