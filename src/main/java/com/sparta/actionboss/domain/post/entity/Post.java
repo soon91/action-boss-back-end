@@ -19,10 +19,10 @@ public class Post extends Timestamped {
     @Column
     private Long postId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 55)
     private String title;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 550)
     private String content;
 
     @Column(nullable = false)
