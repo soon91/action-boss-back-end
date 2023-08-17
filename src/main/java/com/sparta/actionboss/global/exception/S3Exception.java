@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class PostException extends RuntimeException {
+public class S3Exception extends RuntimeException {
 
     private final ClientErrorCode errorCode;
 
