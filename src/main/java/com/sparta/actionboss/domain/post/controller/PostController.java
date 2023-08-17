@@ -65,6 +65,6 @@ public class PostController {
     ) {
         return new ResponseEntity<>(postService.deletePost(
                 postId,
-                userDetails.getUser()), HttpStatus.NO_CONTENT);
+                userDetails.getUser()), HttpStatus.OK);
     }
 }
