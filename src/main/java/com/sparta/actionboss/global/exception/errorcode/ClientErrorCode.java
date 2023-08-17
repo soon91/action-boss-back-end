@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum ClientErrorCode {
+
+
     // User
     DUPLICATE_NICKNAME(HttpStatus.BAD_REQUEST, "이미 존재하는 닉네임입니다."),
     EMAIL_AUTHENTICATION_FAILED(HttpStatus.BAD_REQUEST, "이메일 인증에 실패하였습니다."),
@@ -26,10 +28,15 @@ public enum ClientErrorCode {
     NO_PERMISSION_UPDATE(HttpStatus.FORBIDDEN, "이 게시글을 변경할 수 있는 권한이 없습니다."),
     NO_PERMISSION_DELETE(HttpStatus.FORBIDDEN, "이 게시글을 삭제할 수 있는 권한이 없습니다."),
     NO_POST(HttpStatus.NOT_FOUND, "존재하지 않는 게시글입니다."),
-    NON_LOGIN_CREATE(HttpStatus.FORBIDDEN, "로그인 후 게시글을 작성할 수 있습니다.")
+    NON_LOGIN_CREATE(HttpStatus.FORBIDDEN, "로그인 후 게시글을 작성할 수 있습니다."),
 
-    ;
+    NO_IMAGE(HttpStatus.NOT_FOUND, "존재하지 않는 이미지입니다."),
+
+    S3_CONVERT_FAILURE(HttpStatus.INTERNAL_SERVER_ERROR, "파일 전환에 실패했습니다"),
+    S3_TEMP_IMAGE_DELETE_FAILURE(HttpStatus.INTERNAL_SERVER_ERROR, "임시로 저장된 이미지 삭제에 실패하였습니다.");
+
 
     private final HttpStatus statusCode;
     private final String msg;
+
 }

@@ -26,10 +26,6 @@ public class Post extends Timestamped {
     private String content;
 
     @Column(nullable = false)
-    @ElementCollection
-    private List<String> imageNames;
-
-    @Column(nullable = false)
     private boolean done;
 
     @Column(nullable = false)
@@ -54,10 +50,12 @@ public class Post extends Timestamped {
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
     private List<Agree> postAgreeList;
 
-    public Post(PostRequestDto postRequestDto, List<String> imageNames, User user) {
+    @OneToMany(mappedBy = "post", orphanRemoval = true)
+    private List<Image> imageList;
+
+    public Post(PostRequestDto postRequestDto, User user) {
         this.title = postRequestDto.getTitle();
         this.content = postRequestDto.getContent();
-        this.imageNames = imageNames;
         this.address = postRequestDto.getAddress();
         this.latitude = postRequestDto.getLatitude();
         this.longitude = postRequestDto.getLongitude();
@@ -67,10 +65,6 @@ public class Post extends Timestamped {
     public void update(PostRequestDto postRequestDto) {
         this.title = postRequestDto.getTitle();
         this.content = postRequestDto.getContent();
-    }
-
-    public void setNames(List<String> imageNames) {
-        this.imageNames = imageNames;
     }
 
     public void setDone(boolean done) {
