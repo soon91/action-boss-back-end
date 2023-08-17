@@ -14,10 +14,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addMapping("/**").allowCredentials(true)
                 .allowedHeaders("*")
                 .exposedHeaders("*")
-                .allowedOrigins("http://localhost:3000")
-                .allowedOrigins("https://front-end-topaz-kappa.vercel.app")
-                .allowedOrigins("https://hdaejang.com")
-                .allowedMethods("OPTIONS", "GET", "POST", "PUT", "DELETE")
+                .allowedOrigins("http://localhost:3000", "https://front-end-topaz-kappa.vercel.app", "https://hdaejang.com")
+                .allowedOrigins()
+                .allowedMethods("GET", "POST", "PUT", "DELETE")
                 .maxAge(3000);
     }
 }
