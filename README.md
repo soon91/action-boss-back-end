@@ -3,16 +3,16 @@
 
 ---
 
-### 팀 원
+### 팀원
 김예진, 이예원, 최순
 
 ---
 
 ### 결과물
 
-홈페이지 주소 : [https://ohou-clone-fe.vercel.app/](https://hdaejang.com/)
+홈페이지 주소 : [행동대장](https://hdaejang.com/)
 
-프로젝트 zira: https://the-strongest-team4.atlassian.net/jira/software/projects/STRONG/boards/4
+커뮤니케이션: [jira: 행동대장](https://the-strongest-team4.atlassian.net/wiki/spaces/BOSS/overview?homepageId=2720123)
 
 ---
 
