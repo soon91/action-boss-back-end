@@ -11,7 +11,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**").allowCredentials(true)
+        registry.addMapping("/**")
                 .allowedHeaders("*")
                 .exposedHeaders("Authorization")
                 .allowedOrigins("http://localhost:3000",
@@ -19,7 +19,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "https://dev-front-end-omega-henna-44.vercel.app",
                         "https://test-eta-khaki.vercel.app",
                         "https://hdaejang.com")
-                .allowedMethods("GET", "POST", "PUT", "DELETE")
+                .allowedMethods("OPTIONS", "PATCH", "GET", "POST", "PUT", "DELETE")
                 .maxAge(3000);
     }
 }
