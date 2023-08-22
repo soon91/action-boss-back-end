@@ -1,5 +1,6 @@
 package com.sparta.actionboss.domain.auth.entity;
 
+import com.sparta.actionboss.domain.post.entity.Comment;
 import com.sparta.actionboss.domain.post.entity.Post;
 import com.sparta.actionboss.global.entity.Timestamped;
 import jakarta.persistence.*;
@@ -32,6 +33,9 @@ public class User extends Timestamped {
 
     @OneToMany(mappedBy = "user")
     private List<Post> postList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<Comment> commentList = new ArrayList<>();
 
     public User(String nickname, String password, String email, UserRoleEnum role) {
         this.nickname = nickname;

@@ -15,4 +15,7 @@ public class SuccessMessage {
     public static final String AVAILABLE_NICKNAME = "사용 가능한 닉네임입니다.";
     public static final String CREATE_AGREE = "공감해요를 성공하였습니다.";
     public static final String CANCEL_AGREE = "공감해요를 취소하였습니다.";
+
+    public static final String CREATE_COMMENT_MESSAGE = "댓글 작성에 성공하였습니다.";
+    public static final String DELETE_COMMENT_MESSAGE = "댓글 삭제에 성공하였습니다.";
 }

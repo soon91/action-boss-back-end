@@ -4,6 +4,7 @@ import com.sparta.actionboss.domain.auth.entity.User;
 import com.sparta.actionboss.domain.auth.entity.UserRoleEnum;
 import com.sparta.actionboss.domain.post.dto.PostRequestDto;
 import com.sparta.actionboss.domain.post.dto.PostResponseDto;
+import com.sparta.actionboss.domain.post.entity.Comment;
 import com.sparta.actionboss.domain.post.entity.Image;
 import com.sparta.actionboss.domain.post.entity.Post;
 import com.sparta.actionboss.domain.post.repository.AgreeRepository;
@@ -43,6 +44,7 @@ public class PostService {
     private final PostDoneRepository postDoneRepository;
     private final AgreeRepository agreeRepository;
     private final ImageRepository imageRepository;
+    private final CommentService commentService;
 
     private static final int MAXIMUM_IMAGES = 3;    // 이미지 업로드 최대 개수
 
@@ -97,7 +99,10 @@ public class PostService {
             owner = post.getUser().getNickname().equals(loginUser.getNickname());
         }
 
-        return new CommonResponse<>(GET_POST_MESSAGE, new PostResponseDto(post, imageURLs, done, owner, agree));
+        // 댓글 가져오기
+        List<Comment> comments = commentService.findComments(postId);
+
+        return new CommonResponse<>(GET_POST_MESSAGE, new PostResponseDto(post, imageURLs, done, owner, agree, comments));
     }
 
     @Transactional
