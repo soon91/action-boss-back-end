@@ -96,9 +96,6 @@ public class PostService {
 
             owner = post.getUser().getNickname().equals(loginUser.getNickname());
         }
-        if (post.isDone()) {
-            throw new PostException(ClientErrorCode.ALREADY_DONE_POST);
-        }
 
         return new CommonResponse<>(GET_POST_MESSAGE, new PostResponseDto(post, imageURLs, done, owner, agree));
     }
