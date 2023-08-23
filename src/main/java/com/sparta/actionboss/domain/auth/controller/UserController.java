@@ -23,19 +23,12 @@ public class UserController {
         return new ResponseEntity<>(userService.signup(requestDto), HttpStatus.CREATED);
     }
 
-//    TODO : token이 안넘어 갈 경우를 위해 남겨둠
-//    @PostMapping("/login")
-//    public userResponseDto login(@RequestBody LoginRequestDto requestDto, HttpServletResponse response){
-//        LoginResponseDto responseDto = userService.login(requestDto);
-//        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, responseDto.getAccessToken());
-//        return new userResponseDto("로그인에 성공하였습니다.");
-//    }
-
     @PostMapping("/login")
     public ResponseEntity<CommonResponse<LoginResponseDto>> login(@RequestBody LoginRequestDto requestDto, HttpServletResponse response){
         CommonResponse<LoginResponseDto> commonResponse = userService.login(requestDto);
         LoginResponseDto responseDto = commonResponse.getData();
-        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, responseDto.getAccessToken());
+        response.addHeader(JwtUtil.AUTHORIZATION_ACCESS, responseDto.getAccessToken());
+        response.addHeader(JwtUtil.AUTHORIZATION_REFRESH, responseDto.getRefreshToken());
         return new ResponseEntity<>(new CommonResponse<>(commonResponse.getMsg()), HttpStatus.OK);
     }
 
