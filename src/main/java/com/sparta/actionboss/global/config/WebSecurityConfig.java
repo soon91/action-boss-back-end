@@ -1,5 +1,6 @@
 package com.sparta.actionboss.global.config;
 
+import com.sparta.actionboss.domain.auth.repository.UserRepository;
 import com.sparta.actionboss.global.filter.JwtAuthorizationFilter;
 import com.sparta.actionboss.global.security.JwtUtil;
 import com.sparta.actionboss.global.security.UserDetailsServiceImpl;
@@ -28,6 +29,7 @@ public class WebSecurityConfig {
 
     private final JwtUtil jwtUtil;
     private final UserDetailsServiceImpl userDetailsService;
+    private final UserRepository userRepository;
     private final AuthenticationConfiguration authenticationConfiguration;
 
     @Bean
@@ -42,7 +44,7 @@ public class WebSecurityConfig {
 
     @Bean
     public JwtAuthorizationFilter jwtAuthorizationFilter() {
-        return new JwtAuthorizationFilter(jwtUtil, userDetailsService);
+        return new JwtAuthorizationFilter(jwtUtil, userDetailsService, userRepository);
     }
 
     @Bean
