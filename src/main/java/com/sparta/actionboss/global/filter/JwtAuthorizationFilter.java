@@ -48,10 +48,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 "https://hdaejang.com"
         );
 
-        if(allowedOrigins.contains(origin)) {
-            res.setHeader("Access-Control-Allow-Origin", origin);
-        }
-
         try {
             String accessTokenValue = jwtUtil.getJwtFromHeader(req, AUTHORIZATION_ACCESS);
             String refreshTokenValue = jwtUtil.getJwtFromHeader(req, AUTHORIZATION_REFRESH);
@@ -68,6 +64,9 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                         setAuthentication(email);
                     }
                 } catch (IllegalArgumentException e) { // JWT 검증 실패 시 IllegalArgumentException을 잡아
+                    if(allowedOrigins.contains(origin)) {
+                        res.setHeader("Access-Control-Allow-Origin", origin);
+                    }
                     log.warn(e.getMessage());
                     sendExpiredAccessTokenResponse(res); // 만료 응답 전송
                     return; // 필터 체인 종료
@@ -85,6 +84,9 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                             res.setHeader(AUTHORIZATION_ACCESS,newAccessTokenValue);
                         }
                     } catch (IllegalArgumentException e) { // JWT 검증 실패 시 IllegalArgumentException을 잡아
+                        if(allowedOrigins.contains(origin)) {
+                            res.setHeader("Access-Control-Allow-Origin", origin);
+                        }
                         log.warn(e.getMessage());
                         sendExpiredAccessTokenResponse(res); // 만료 응답 전송
                         return; // 필터 체인 종료
