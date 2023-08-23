@@ -33,7 +33,10 @@ public enum ClientErrorCode {
     NO_IMAGE(HttpStatus.NOT_FOUND, "존재하지 않는 이미지입니다."),
 
     S3_CONVERT_FAILURE(HttpStatus.INTERNAL_SERVER_ERROR, "파일 전환에 실패했습니다"),
-    S3_TEMP_IMAGE_DELETE_FAILURE(HttpStatus.INTERNAL_SERVER_ERROR, "임시로 저장된 이미지 삭제에 실패하였습니다.");
+    S3_TEMP_IMAGE_DELETE_FAILURE(HttpStatus.INTERNAL_SERVER_ERROR, "임시로 저장된 이미지 삭제에 실패하였습니다."),
+
+    // Search
+    SEARCH_NULL(HttpStatus.BAD_REQUEST, "검색어가 없습니다.");
 
 
     private final HttpStatus statusCode;
