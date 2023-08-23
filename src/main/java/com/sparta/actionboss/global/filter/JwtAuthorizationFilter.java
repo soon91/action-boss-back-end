@@ -22,6 +22,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import static com.sparta.actionboss.global.security.JwtUtil.AUTHORIZATION_ACCESS;
 import static com.sparta.actionboss.global.security.JwtUtil.AUTHORIZATION_REFRESH;
@@ -37,6 +39,19 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain) throws ServletException, IOException {
+        String origin = req.getHeader("Origin");
+        List<String> allowedOrigins = Arrays.asList(
+                "http://localhost:3000",
+                "https://front-end-tau-henna.vercel.app",
+                "https://dev-front-end-omega-henna-44.vercel.app",
+                "https://test-eta-khaki.vercel.app",
+                "https://hdaejang.com"
+        );
+
+        if(allowedOrigins.contains(origin)) {
+            res.setHeader("Access-Control-Allow-Origin", origin);
+        }
+
         try {
             String accessTokenValue = jwtUtil.getJwtFromHeader(req, AUTHORIZATION_ACCESS);
             String refreshTokenValue = jwtUtil.getJwtFromHeader(req, AUTHORIZATION_REFRESH);
@@ -52,7 +67,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                         log.info("Access token email: {}", email);
                         setAuthentication(email);
                     }
-                } catch (IllegalArgumentException e) { // JWT 검증 실패 시 IllegalArgumentException을 잡아냅니다.
+                } catch (IllegalArgumentException e) { // JWT 검증 실패 시 IllegalArgumentException을 잡아
                     log.warn(e.getMessage());
                     sendExpiredAccessTokenResponse(res); // 만료 응답 전송
                     return; // 필터 체인 종료
@@ -69,7 +84,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                             setAuthentication(email);
                             res.setHeader(AUTHORIZATION_ACCESS,newAccessTokenValue);
                         }
-                    } catch (IllegalArgumentException e) { // JWT 검증 실패 시 IllegalArgumentException을 잡아냅니다.
+                    } catch (IllegalArgumentException e) { // JWT 검증 실패 시 IllegalArgumentException을 잡아
                         log.warn(e.getMessage());
                         sendExpiredAccessTokenResponse(res); // 만료 응답 전송
                         return; // 필터 체인 종료
