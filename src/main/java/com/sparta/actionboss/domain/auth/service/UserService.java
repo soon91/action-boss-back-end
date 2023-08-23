@@ -80,7 +80,7 @@ public class UserService {
             throw new LoginException(ClientErrorCode.INVALID_PASSWORDS);
         }
         String accessToken = jwtUtil.createAccessToken(user.getEmail(), user.getRole());
-        String refreshToken = jwtUtil.createRefreshToken();
+        String refreshToken = jwtUtil.createRefreshToken(user.getEmail());
 
         Optional<RefreshToken> existingRefreshToken = refreshTokenRepository.findByEmail(user.getEmail());
 

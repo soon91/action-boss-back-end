@@ -55,58 +55,54 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             log.info("Access token value: {}", accessTokenValue);
             log.info("Refresh token value: {}", refreshTokenValue);
 
-            if(accessTokenValue!=null){
+            if (refreshTokenValue != null && accessTokenValue != null) {
                 try {
-                    if(jwtUtil.validateAccessToken(accessTokenValue, req)){
-                        Claims claims = jwtUtil.getUserInfoFromToken(accessTokenValue);
-                        String email = claims.getSubject();
-                        log.info("Access token email: {}", email);
+                    if ((jwtUtil.validateRefreshToken(refreshTokenValue, req))) {
+                        String email = jwtUtil.getEmailFromToken(refreshTokenValue);
+                        User user = userRepository.findByEmail(email).orElseThrow(
+                                () -> new IllegalArgumentException("잘못된 이메일입니다."));
+                        String newAccessTokenValue = jwtUtil.createAccessToken(email, user.getRole());
+                        log.info("Creating new access token for email: {}", email);
                         setAuthentication(email);
+                        res.setHeader(AUTHORIZATION_ACCESS, newAccessTokenValue);
                     }
                 } catch (IllegalArgumentException e) { // JWT 검증 실패 시 IllegalArgumentException을 잡아
-                    if(allowedOrigins.contains(origin)) {
+                    if (allowedOrigins.contains(origin)) {
                         res.setHeader("Access-Control-Allow-Origin", origin);
                     }
                     log.warn(e.getMessage());
                     sendExpiredAccessTokenResponse(res); // 만료 응답 전송
                     return; // 필터 체인 종료
                 }
-
-                if (refreshTokenValue!=null) {
-                    try {
-                        if ((jwtUtil.validateRefreshToken(refreshTokenValue, req))){
-                            String email = jwtUtil.getEmailFromToken(refreshTokenValue);
-                            User user = userRepository.findByEmail(email).orElseThrow(
-                                    ()-> new IllegalArgumentException("잘못된 이메일입니다."));
-                            String newAccessTokenValue = jwtUtil.createAccessToken(email,user.getRole());
-                            log.info("Creating new access token for email: {}",email);
-                            setAuthentication(email);
-                            res.setHeader(AUTHORIZATION_ACCESS,newAccessTokenValue);
-                        }
-                    } catch (IllegalArgumentException e) { // JWT 검증 실패 시 IllegalArgumentException을 잡아
-                        if(allowedOrigins.contains(origin)) {
-                            res.setHeader("Access-Control-Allow-Origin", origin);
-                        }
-                        log.warn(e.getMessage());
-                        sendExpiredAccessTokenResponse(res); // 만료 응답 전송
-                        return; // 필터 체인 종료
+            } else if (accessTokenValue != null) {
+                try {
+                    if (jwtUtil.validateAccessToken(accessTokenValue, req)) {
+                        Claims claims = jwtUtil.getUserInfoFromToken(accessTokenValue);
+                        String email = claims.getSubject();
+                        log.info("Access token email: {}", email);
+                        setAuthentication(email);
                     }
+                } catch (IllegalArgumentException e) { // JWT 검증 실패 시 IllegalArgumentException을 잡아
+                    if (allowedOrigins.contains(origin)) {
+                        res.setHeader("Access-Control-Allow-Origin", origin);
+                    }
+                    log.warn(e.getMessage());
+                    sendExpiredAccessTokenResponse(res); // 만료 응답 전송
+                    return; // 필터 체인 종료
                 }
             }
 
-        } catch(IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             log.warn(e.getMessage());
             res.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
 
-        filterChain.doFilter(req,res);
+        filterChain.doFilter(req, res);
     }
 
 
-
-
-    private void sendExpiredAccessTokenResponse(HttpServletResponse res) throws IOException{
+    private void sendExpiredAccessTokenResponse(HttpServletResponse res) throws IOException {
         String responseMessage = "{\n \"msg\" : \"Expired AccessToken\"}";
         try {
             ObjectMapper objectMapper = new ObjectMapper();
