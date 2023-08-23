@@ -3,8 +3,6 @@ package com.sparta.actionboss.domain.post.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.sparta.actionboss.domain.post.entity.Post;
-import com.sparta.actionboss.global.security.UserDetailsImpl;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -29,6 +27,7 @@ public class PostResponseDto {
     private Boolean owner;
     private Boolean agree;
     private Integer agreeCount;
+    private Boolean postDone;
 
     public PostResponseDto(Post post, List<String> imageURLs, boolean done, boolean owner, boolean agree) {
         this.postId = post.getPostId();
@@ -45,6 +44,7 @@ public class PostResponseDto {
         this.agreeCount = post.getPostAgreeList().size();
         this.done = done;
         this.owner = owner;
+        this.postDone = post.isDone();
     }
 
     public PostResponseDto(Long postId) {

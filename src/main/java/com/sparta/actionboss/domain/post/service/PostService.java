@@ -2,11 +2,13 @@ package com.sparta.actionboss.domain.post.service;
 
 import com.sparta.actionboss.domain.auth.entity.User;
 import com.sparta.actionboss.domain.auth.entity.UserRoleEnum;
-import com.sparta.actionboss.domain.post.repository.PostDoneRepository;
 import com.sparta.actionboss.domain.post.dto.PostRequestDto;
 import com.sparta.actionboss.domain.post.dto.PostResponseDto;
+import com.sparta.actionboss.domain.post.entity.Image;
 import com.sparta.actionboss.domain.post.entity.Post;
 import com.sparta.actionboss.domain.post.repository.AgreeRepository;
+import com.sparta.actionboss.domain.post.repository.ImageRepository;
+import com.sparta.actionboss.domain.post.repository.PostDoneRepository;
 import com.sparta.actionboss.domain.post.repository.PostRepository;
 import com.sparta.actionboss.global.exception.PostException;
 import com.sparta.actionboss.global.exception.errorcode.ClientErrorCode;
@@ -24,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.sparta.actionboss.global.response.SuccessMessage.*;
 
@@ -39,6 +42,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final PostDoneRepository postDoneRepository;
     private final AgreeRepository agreeRepository;
+    private final ImageRepository imageRepository;
 
     private static final int MAXIMUM_IMAGES = 3;    // 이미지 업로드 최대 개수
 
@@ -57,21 +61,30 @@ public class PostService {
         }
         List<String> imageNames = images.stream().map(MultipartFile::getOriginalFilename).toList();
 
-        Post post = new Post(postRequestDto, imageNames, user);
+        Post post = new Post(postRequestDto, user);
         postRepository.save(post);
 
         // 요청별로 폴더생성 -> 저장
-        String directoryPath = "images/" + post.getPostId();
+        String folderName = "[" + post.getPostId() + "]" + "-" + UUID.randomUUID().toString().substring(19);
+
+        String directoryPath = "images/" + folderName;
 
         List<String> imageNameList = s3Service.upload(images, directoryPath);
-        post.setNames(imageNameList);
+
+        for (String imageName : imageNameList) {
+            Image image = new Image(imageName, folderName, post);
+            imageRepository.save(image);
+        }
+
         return new CommonResponse(CREATE_POST_MESSAGE, new PostResponseDto(post.getPostId()));
     }
 
     public CommonResponse<PostResponseDto> getPost(Long postId) {
         Optional<UserDetailsImpl> userDetails = Optional.ofNullable(getUserDetails());
         Post post = findPost(postId);
-        List<String> imageURLs = imageUrlPrefix(post.getImageNames(), postId);
+        List<Image> imageList = findImagesByPost(postId);
+        List<String> imageURLs = imageUrlPrefix(imageList);
+
         boolean done = false;
         boolean owner = false;
         boolean agree = false;
@@ -82,9 +95,6 @@ public class PostService {
             agree = agreeRepository.findByUserAndPost(loginUser, post).isPresent();
 
             owner = post.getUser().getNickname().equals(loginUser.getNickname());
-        }
-        if (post.isDone()) {
-            throw new PostException(ClientErrorCode.ALREADY_DONE_POST);
         }
 
         return new CommonResponse<>(GET_POST_MESSAGE, new PostResponseDto(post, imageURLs, done, owner, agree));
@@ -102,7 +112,6 @@ public class PostService {
         } else {
             throw new PostException(ClientErrorCode.NO_PERMISSION_UPDATE);
         }
-        List<String> imageURLs = imageUrlPrefix(post.getImageNames(), postId);
         return new CommonResponse(UPDATE_POST_MESSAGE);
     }
 
@@ -112,12 +121,12 @@ public class PostService {
             User user
     ) {
         Post post = findPost(postId);
-        List<String> imageNames = post.getImageNames();
+        List<Image> images = findImagesByPost(postId);
 
         if (hasAuthority(post, user)) {
             postRepository.delete(findPost(postId));
-            if (!imageNames.isEmpty()) {
-                s3Service.deleteFolder(postId.toString());
+            if (!images.isEmpty()) {
+                s3Service.deleteFolder(images.get(0).getFolderName());
             }
         } else {
             throw new PostException(ClientErrorCode.NO_PERMISSION_DELETE);
@@ -130,6 +139,14 @@ public class PostService {
     private Post findPost(Long postId) {
         return postRepository.findById(postId).orElseThrow(
                 () -> new PostException(ClientErrorCode.NO_POST));
+    }
+
+    public List<Image> findImagesByPost(Long postId) {
+        List<Image> images = imageRepository.findImagesByPostId(postId);
+        if (images.isEmpty()) {
+            throw new PostException(ClientErrorCode.NO_POST);
+        }
+        return images;
     }
 
     // 권한 확인
@@ -151,10 +168,10 @@ public class PostService {
 
 
     // 이미지 파일명에 URL Prefix 붙이기
-    private List<String> imageUrlPrefix(List<String> imageNames, Long postId) {
+    private List<String> imageUrlPrefix(List<Image> imageNames) {
         return imageNames
                 .stream()
-                .map(imageName -> s3Url + "/images/" + postId + "/" + imageName)
+                .map(imageName -> s3Url + "/images/" + imageName.getFolderName() + "/" + imageName.getImageName())
                 .toList();
     }
 

@@ -1,7 +1,6 @@
 package com.sparta.actionboss.global.advice;
 
 import com.sparta.actionboss.global.exception.*;
-import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -28,6 +27,20 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(PostException.class)
     public ResponseEntity<?> postExceptionHandler(PostException e) {
+        return ResponseEntity
+                .status(e.getErrorCode().getStatusCode())
+                .body(new ErrorResponse(e.getErrorCode().getMsg()));
+    }
+
+    @ExceptionHandler(ImageException.class)
+    public ResponseEntity<?> postExceptionHandler(ImageException e) {
+        return ResponseEntity
+                .status(e.getErrorCode().getStatusCode())
+                .body(new ErrorResponse(e.getErrorCode().getMsg()));
+    }
+
+    @ExceptionHandler(S3Exception.class)
+    public ResponseEntity<?> postExceptionHandler(S3Exception e) {
         return ResponseEntity
                 .status(e.getErrorCode().getStatusCode())
                 .body(new ErrorResponse(e.getErrorCode().getMsg()));

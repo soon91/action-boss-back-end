@@ -2,6 +2,8 @@ package com.sparta.actionboss.domain.post.service;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.*;
+import com.sparta.actionboss.global.exception.S3Exception;
+import com.sparta.actionboss.global.exception.errorcode.ClientErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,7 +38,7 @@ public class S3Service {
         for (MultipartFile multipartFile : multipartFiles) {
             // MultipartFile -> File 변환
             File uploadFile = convert(multipartFile).orElseThrow(
-                    () -> new IllegalArgumentException("파일 전환에 실패했습니다."));
+                    () -> new S3Exception(ClientErrorCode.S3_CONVERT_FAILURE));
             String fileName = uploadFile.getName();
             upload(uploadFile, dirName);
             fileNames.add(fileName);
@@ -51,7 +53,7 @@ public class S3Service {
 
         boolean deleteSuccessful = uploadFile.delete(); // 임시로 저장된 이미지 삭제
         if (!deleteSuccessful) {
-            log.error("임시로 저장된 이미지 삭제 실패");
+            throw new S3Exception(ClientErrorCode.S3_TEMP_IMAGE_DELETE_FAILURE);
         }
         return uploadImageURL;
     }
@@ -87,8 +89,7 @@ public class S3Service {
             }
             return Optional.of(convertFile);
         }
-        throw new IOException("파일 전환에 실패했습니다: " + multipartFile.getOriginalFilename()
-                + " (경로: " + convertFile.getAbsolutePath() + ")");
+        throw new S3Exception(ClientErrorCode.S3_CONVERT_FAILURE);
     }
 
     public void deleteFolder(String requestFolderName) {

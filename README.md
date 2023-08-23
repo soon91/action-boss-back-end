@@ -1,17 +1,34 @@
-# Action-Boss
+![image](https://github.com/ACTION-BOSS/Front-end/assets/56420106/77ec1890-e182-4f4e-b3e2-68c672719eba)
+# 실전프로젝트 - 행동대장
+동네 사건,사고와 문제에 보다 쉽게 접근하고 공유하는 커뮤니티 서비스 <br><br><br>
 
-<h2>Git Convention</h2>
-feat : 새로운 기능 추가 <br>
-fix : 버그 수정 또는 오타 <br>
-refactor: 리팩토링 <br>
-design : CSS 등 사용자 UI 디자인 변경 <br>
-comment : 필요한 주석 추가 및 변경 <br>
-style : 코드 포맷팅, 세미콜론(;) 누락, 기능 수정이 없는 경우 <br>
-test : 테스트 코드(테스트 코드 추가, 수정, 삭제, 비즈니스 로직에 변경이 없는 경우) <br>
-chore : 위에 걸리지 않는 기타 변경사항(빌드 스크립트 수정, assets image, 패키지 매니저 등) <br>
-init: 프로젝트 초기 생성 <br>
-rename: 파일 혹은 폴더명 수정하거나 옮기는 경우 <br>
-remove : 파일을 삭제하는 작업만 수행하는 경우 <br>
-dir: 폴더/패키지 구조 구성, 변경 <br>
-merge: 깃 브랜치 머지 <br>
-docs : 문서 수정
+## 팀원 👨‍👧‍👧
+김예진, 이예원, 최순 <br><br><br>
+
+## 결과물 📚
+
+홈페이지 주소 : [행동대장](https://hdaejang.com/)
+
+커뮤니케이션: [jira: 행동대장](https://the-strongest-team4.atlassian.net/wiki/spaces/BOSS/overview?homepageId=2720123) <br><br><br>
+
+
+## 주요 기능 🎯
+동네사람들과 불편사항 공유
+ - 불편사항 게시글 작성, 수정
+ - ‘나도 불편해요’ 표시로 공감
+ - ‘해결했어요’ 표시로 불편사항이 해결됨을 공유
+ - 카카오 지도 API
+ - 지도와 핑으로 직관적인 위치 확인 <br><br><br>
+
+## 사용 기술 💻
+
+#### Environment
+<img src="https://img.shields.io/badge/intelliJ-000000?style=flat&logo=intellijidea&logoColor=white">
+
+
+#### Development
+<img src="https://img.shields.io/badge/springboot-6DB33F?style=flat&logo=springboot&logoColor=white"> <img src="https://img.shields.io/badge/mysql-4479A1?style=flat&logo=mysql&logoColor=white">
+<img src="https://img.shields.io/badge/springsecurity-6DB33F?style=flat&logo=springsecurity&logoColor=white"> <img src="https://img.shields.io/badge/ubuntu-E95420?style=flat&logo=ubuntu&logoColor=white">
+
+#### Distribution - CI / CD
+<img src="https://img.shields.io/badge/AmazonAWS-FF9900?style=flat&logo=amazonaws&logoColor=white"> <img src="https://img.shields.io/badge/AmazonS3-569A31?style=flat&logo=amazons3&logoColor=white"> <img src="https://img.shields.io/badge/AmazonEC2-FF9900?style=flat&logo=amazonec2&logoColor=white"> <img src="https://img.shields.io/badge/AmazonRDS-527FFF?style=flat&logo=amazonrds&logoColor=white"> <img src="https://img.shields.io/badge/GithubActions-2088FF?style=flat&logo=githubactions&logoColor=white">

@@ -60,6 +60,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
                         .anyRequest().authenticated()
         );
         // 필터 관리

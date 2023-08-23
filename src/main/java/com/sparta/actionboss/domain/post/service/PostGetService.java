@@ -6,13 +6,17 @@ import com.sparta.actionboss.domain.post.dto.PostListResponseDto;
 import com.sparta.actionboss.domain.post.dto.PostModalResponseDto;
 import com.sparta.actionboss.domain.post.entity.Post;
 import com.sparta.actionboss.domain.post.repository.AgreeRepository;
+import com.sparta.actionboss.domain.post.repository.ImageRepository;
 import com.sparta.actionboss.domain.post.repository.PostRepository;
 import com.sparta.actionboss.global.exception.PostException;
 import com.sparta.actionboss.global.exception.errorcode.ClientErrorCode;
 import com.sparta.actionboss.global.response.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,9 +36,10 @@ public class PostGetService {
 
     private final PostRepository postRepository;
     private final AgreeRepository agreeRepository;
+    private final ImageRepository imageRepository;
 
     public CommonResponse<PostListAndTotalPageResponseDto> getPostList(Integer page, Integer limit, String sortBy, boolean done,
-             Double northLatitude, Double eastLongitude, Double southLatitude, Double westLongitude) {
+                                                                       Double northLatitude, Double eastLongitude, Double southLatitude, Double westLongitude) {
         Sort.Direction direction = Sort.Direction.DESC;
         Sort sort = Sort.by(direction, sortBy, "createdAt");
 
@@ -50,7 +55,7 @@ public class PostGetService {
                         agreeCount = 0;
                     }
 
-                    String imageUrl = s3Url + "/images/" + a.getPostId() + "/" + a.getImageNames().get(0);
+                    String imageUrl = s3Url + "/images/" + a.getImageList().get(0).getFolderName() + "/" + a.getImageList().get(0).getImageName();
 
                     return new PostListResponseDto(
                             a.getPostId(),
@@ -75,13 +80,13 @@ public class PostGetService {
             agreeCount = 0;
         }
 
-        String imageUrl = s3Url + "/images/" + postId + "/" + findPost.getImageNames().get(0);
+        String imageUrl = s3Url + "/images/" + findPost.getImageList().get(0).getFolderName() + "/" + findPost.getImageList().get(0).getImageName();
 
         return new CommonResponse<>(GET_POST_MESSAGE, new PostModalResponseDto(findPost, imageUrl, agreeCount));
     }
 
     public CommonResponse<List<MapListResponseDto>> getMapList(boolean done,
-             Double northLatitude, Double eastLongitude, Double southLatitude, Double westLongitude) {
+                                                               Double northLatitude, Double eastLongitude, Double southLatitude, Double westLongitude) {
         List<Post> post;
 
         if (done) {
