@@ -94,7 +94,7 @@ public class JwtUtil {
 
 
     // 토큰 검증
-    public boolean validateAccessToken(String token, HttpServletResponse response, HttpServletRequest request) {
+    public boolean validateAccessToken(String token, HttpServletRequest request) {
         try {
             String headerValue = request.getHeader(AUTHORIZATION_ACCESS);
             log.info("Access token header value: {}", headerValue);

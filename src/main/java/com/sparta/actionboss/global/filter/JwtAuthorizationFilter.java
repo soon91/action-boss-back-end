@@ -37,35 +37,57 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain) throws ServletException, IOException {
+        try {
+            String accessTokenValue = jwtUtil.getJwtFromHeader(req, AUTHORIZATION_ACCESS);
+            String refreshTokenValue = jwtUtil.getJwtFromHeader(req, AUTHORIZATION_REFRESH);
 
-        String accessTokenValue = jwtUtil.getJwtFromHeader(req, AUTHORIZATION_ACCESS);
-        String refreshTokenValue = jwtUtil.getJwtFromHeader(req, AUTHORIZATION_REFRESH);
+            log.info("Access token value: {}", accessTokenValue);
+            log.info("Refresh token value: {}", refreshTokenValue);
 
-        log.info("Access token value: {}", accessTokenValue);
-        log.info("Refresh token value: {}", refreshTokenValue);
+            if(accessTokenValue!=null){
+                try {
+                    if(jwtUtil.validateAccessToken(accessTokenValue, req)){
+                        Claims claims = jwtUtil.getUserInfoFromToken(accessTokenValue);
+                        String email = claims.getSubject();
+                        log.info("Access token email: {}", email);
+                        setAuthentication(email);
+                    }
+                } catch (IllegalArgumentException e) { // JWT 검증 실패 시 IllegalArgumentException을 잡아냅니다.
+                    log.warn(e.getMessage());
+                    sendExpiredAccessTokenResponse(res); // 만료 응답 전송
+                    return; // 필터 체인 종료
+                }
 
-        if(accessTokenValue!=null){
-            Claims claims = jwtUtil.getUserInfoFromToken(accessTokenValue);
-            String email = claims.getSubject();
-            log.info("Access token email: {}", email);
-            setAuthentication(email);
-        } else if(refreshTokenValue!=null){
-            if ((jwtUtil.validateRefreshToken(refreshTokenValue, req))){
-                String email = jwtUtil.getEmailFromToken(refreshTokenValue);
-                User user = userRepository.findByEmail(email).orElseThrow(
-                        ()-> new IllegalArgumentException("잘못된 이메일입니다."));
-                String newAccessTokenValue = jwtUtil.createAccessToken(email, user.getRole());
-                log.info("Creating new access token for email: {}", email);
-                setAuthentication(email);
-                res.setHeader(AUTHORIZATION_ACCESS, newAccessTokenValue);
-            } else {
-                log.warn("Expired access token received");
-                sendExpiredAccessTokenResponse(res);
-                return;
+                if (refreshTokenValue!=null) {
+                    try {
+                        if ((jwtUtil.validateRefreshToken(refreshTokenValue, req))){
+                            String email = jwtUtil.getEmailFromToken(refreshTokenValue);
+                            User user = userRepository.findByEmail(email).orElseThrow(
+                                    ()-> new IllegalArgumentException("잘못된 이메일입니다."));
+                            String newAccessTokenValue = jwtUtil.createAccessToken(email,user.getRole());
+                            log.info("Creating new access token for email: {}",email);
+                            setAuthentication(email);
+                            res.setHeader(AUTHORIZATION_ACCESS,newAccessTokenValue);
+                        }
+                    } catch (IllegalArgumentException e) { // JWT 검증 실패 시 IllegalArgumentException을 잡아냅니다.
+                        log.warn(e.getMessage());
+                        sendExpiredAccessTokenResponse(res); // 만료 응답 전송
+                        return; // 필터 체인 종료
+                    }
+                }
             }
+
+        } catch(IllegalArgumentException e){
+            log.warn(e.getMessage());
+            res.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
         }
-        filterChain.doFilter(req, res);
+
+        filterChain.doFilter(req,res);
     }
+
+
+
 
     private void sendExpiredAccessTokenResponse(HttpServletResponse res) throws IOException{
         String responseMessage = "{\n \"msg\" : \"Expired AccessToken\"}";
