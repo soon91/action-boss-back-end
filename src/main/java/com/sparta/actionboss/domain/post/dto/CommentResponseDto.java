@@ -13,13 +13,16 @@ public class CommentResponseDto {
     private Long id;
     private String nickname;
     private String content;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createdAt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd")
+    private LocalDateTime createdDay;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
+    private LocalDateTime createdTime;
 
     public CommentResponseDto(Comment comment) {
         this.id = comment.getId();
         this.nickname = comment.getNickname();
         this.content = comment.getContent();
-        this.createdAt = comment.getCreatedAt();
+        this.createdDay = comment.getCreatedAt();
+        this.createdTime = comment.getCreatedAt();
     }
 }

@@ -20,7 +20,7 @@ public class PostResponseDto {
     private String address;
     private Double latitude;
     private Double longitude;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd")
     private LocalDateTime createdAt;
     private String nickname;
     private Integer doneCount;
