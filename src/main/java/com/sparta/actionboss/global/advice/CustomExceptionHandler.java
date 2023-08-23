@@ -46,4 +46,11 @@ public class CustomExceptionHandler {
                 .body(new ErrorResponse(e.getErrorCode().getMsg()));
     }
 
+    @ExceptionHandler(CommentException.class)
+    public ResponseEntity<?> postExceptionHandler(CommentException e) {
+        return ResponseEntity
+                .status(e.getErrorCode().getStatusCode())
+                .body(new ErrorResponse(e.getErrorCode().getMsg()));
+    }
+
 }
