@@ -1,5 +1,6 @@
 package com.sparta.actionboss.domain.search.controller;
 
+import com.sparta.actionboss.domain.search.dto.SearchResponseDto;
 import com.sparta.actionboss.domain.search.service.SearchService;
 import com.sparta.actionboss.global.response.CommonResponse;
 import com.sparta.actionboss.domain.search.dto.SearchPostListAndTotalPageResponseDto;
@@ -19,14 +20,8 @@ public class SearchController {
     private final SearchService searchService;
 
     @GetMapping("/search")
-    public ResponseEntity<CommonResponse<SearchPostListAndTotalPageResponseDto>> searchPostList(
-            @RequestParam Integer page,
-            @RequestParam Integer size,
-            @RequestParam String sort,
-            @RequestParam boolean isdone,
-            @RequestParam String search
-    ) {
-        return new ResponseEntity<>(searchService.searchPostList(page, size, sort, isdone, search), HttpStatus.OK);
+    public ResponseEntity<CommonResponse<SearchResponseDto>> searchPostList(@RequestParam String search) {
+        return new ResponseEntity<>(searchService.searchPostList(search), HttpStatus.OK);
     }
 
 }

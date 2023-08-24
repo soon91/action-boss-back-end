@@ -6,6 +6,5 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface SearchRepository extends JpaRepository<Post, Long> {
-    Page<Post> findByDoneIsTrueAndAddressContaining(String search, Pageable pageable);
-    Page<Post> findByDoneIsFalseAndAddressContaining(String search, Pageable pageable);
+    Post findByAddressContaining(String search);
 }
