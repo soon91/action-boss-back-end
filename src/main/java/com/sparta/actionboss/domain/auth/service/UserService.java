@@ -2,11 +2,9 @@ package com.sparta.actionboss.domain.auth.service;
 
 import com.sparta.actionboss.domain.auth.dto.*;
 import com.sparta.actionboss.domain.auth.entity.Email;
-import com.sparta.actionboss.domain.auth.entity.RefreshToken;
 import com.sparta.actionboss.domain.auth.entity.User;
 import com.sparta.actionboss.domain.auth.entity.UserRoleEnum;
 import com.sparta.actionboss.domain.auth.repository.EmailRepository;
-import com.sparta.actionboss.domain.auth.repository.RefreshTokenRepository;
 import com.sparta.actionboss.domain.auth.repository.UserRepository;
 import com.sparta.actionboss.domain.auth.util.EmailUtil;
 import com.sparta.actionboss.global.exception.LoginException;
@@ -27,7 +25,6 @@ import static com.sparta.actionboss.global.response.SuccessMessage.*;
 @RequiredArgsConstructor
 public class UserService {
 
-    private final RefreshTokenRepository refreshTokenRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailRepository emailRepository;
@@ -70,6 +67,18 @@ public class UserService {
         return new CommonResponse(SIGNUP_SUCCESS, null);
     }
 
+    //    TODO : token이 안넘어 갈 경우를 위해 남겨둠
+//    //로그인
+//    public LoginResponseDto login(LoginRequestDto requestDto){
+//        User user = userRepository.findByEmail(requestDto.getEmail()).orElseThrow(() ->
+//                new LoginException(ClientErrorCode.NO_ACCOUNT));
+//        if(!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())){
+//            throw new LoginException(ClientErrorCode.INVALID_PASSWORDS);
+//        }
+//        String accessToken = jwtUtil.createToken(user.getEmail(), user.getRole());
+//        TokenDto tokenDto = new TokenDto(accessToken);
+//        return new LoginResponseDto(tokenDto.getAccessToken());
+//    }
 
     //로그인
     @Transactional
@@ -79,20 +88,9 @@ public class UserService {
         if(!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())){
             throw new LoginException(ClientErrorCode.INVALID_PASSWORDS);
         }
-        String accessToken = jwtUtil.createAccessToken(user.getEmail(), user.getRole());
-        String refreshToken = jwtUtil.createRefreshToken(user.getEmail());
-
-        Optional<RefreshToken> existingRefreshToken = refreshTokenRepository.findByEmail(user.getEmail());
-
-        if(existingRefreshToken.isPresent()){
-            existingRefreshToken.get().updateToken(refreshToken);
-        } else {
-            RefreshToken newRefreshToken = new RefreshToken(refreshToken, user.getEmail());
-            refreshTokenRepository.save(newRefreshToken);
-        }
-
-        TokenDto tokenDto = new TokenDto(accessToken, refreshToken);
-        LoginResponseDto responseDto = new LoginResponseDto(tokenDto.getAccessToken(), tokenDto.getRefreshToken());
+        String accessToken = jwtUtil.createToken(user.getEmail(), user.getRole());
+        TokenDto tokenDto = new TokenDto(accessToken);
+        LoginResponseDto responseDto = new LoginResponseDto(tokenDto.getAccessToken());
         return new CommonResponse(LOGIN_SUCCESS, responseDto);
     }
 
@@ -103,7 +101,7 @@ public class UserService {
         if (checkNickname(nickname)) {
             throw new SignupException(ClientErrorCode.DUPLICATE_NICKNAME);
         }
-            return new CommonResponse(AVAILABLE_NICKNAME,null);
+        return new CommonResponse(AVAILABLE_NICKNAME,null);
     }
 
     @Transactional
