@@ -61,15 +61,16 @@ public class JwtUtil {
                         .compact();
     }
 
-    public String createRefreshToken() {
+    public String createRefreshToken(String email) {
         Date date = new Date();
 
 //        long TOKEN_TIME = 7 * 24 * 60 * 60 * 1000L;   //5분
-        long TOKEN_TIME = 5 * 60 * 1000L; //     1분(test용)
+        long TOKEN_TIME = 5 * 60 * 1000L; //     5분(test용)
 
 
         return BEARER_PREFIX +
                 Jwts.builder()
+                        .setSubject(email)
                         .setExpiration(new Date(date.getTime() + TOKEN_TIME))
                         .setIssuedAt(date)
                         .signWith(refreshTokenKey, signatureAlgorithm)
@@ -94,24 +95,24 @@ public class JwtUtil {
 
 
     // 토큰 검증
-    public boolean validateAccessToken(String token, HttpServletResponse response, HttpServletRequest request) {
+    public boolean validateAccessToken(String token, HttpServletRequest request) {
         try {
             String headerValue = request.getHeader(AUTHORIZATION_ACCESS);
             log.info("Access token header value: {}", headerValue);
             Jwts.parserBuilder().setSigningKey(accessTokenKey).build().parseClaimsJws(token);
             return true;
         } catch (SecurityException | MalformedJwtException | SignatureException e) {
-            log.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
-            throw new IllegalArgumentException("유효하지 않는 JWT 서명 입니다.");
+            log.error("Invalid JWT signature, 유효하지 않는 Access JWT 서명 입니다.");
+            throw new IllegalArgumentException("유효하지 않는 Access JWT 서명 입니다.");
         } catch (ExpiredJwtException e) {
-            log.error("Expired JWT token, 만료된 JWT token 입니다.");
-            throw new IllegalArgumentException("만료된 JWT token 입니다.");
+            log.error("Expired JWT token, 만료된 Access JWT token 입니다.");
+            throw new IllegalArgumentException("만료된 Access JWT token 입니다.");
         } catch (UnsupportedJwtException e) {
-            log.error("Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.");
-            throw new IllegalArgumentException("지원되지 않는 JWT 토큰 입니다.");
+            log.error("Unsupported JWT token, 지원되지 않는 Access JWT 토큰 입니다.");
+            throw new IllegalArgumentException("지원되지 않는 Access JWT 토큰 입니다.");
         } catch (IllegalArgumentException e) {
-            log.error("JWT claims is empty, 잘못된 JWT 토큰 입니다.");
-            throw new IllegalArgumentException("잘못된 JWT 토큰 입니다.");
+            log.error("JWT claims is empty, 잘못된 Access JWT 토큰 입니다.");
+            throw new IllegalArgumentException("잘못된 Access JWT 토큰 입니다.");
         }
     }
 
@@ -122,17 +123,17 @@ public class JwtUtil {
             Jwts.parserBuilder().setSigningKey(refreshTokenKey).build().parseClaimsJws(token);
             return true;
         } catch (SecurityException | MalformedJwtException | SignatureException e) {
-            log.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
-            throw new IllegalArgumentException("유효하지 않는 JWT 서명 입니다.");
+            log.error("Invalid JWT signature, 유효하지 않는 Refresh JWT 서명 입니다.");
+            throw new IllegalArgumentException("유효하지 않는 Refresh JWT 서명 입니다.");
         } catch (ExpiredJwtException e) {
-            log.error("Expired JWT token, 만료된 JWT token 입니다.");
-            throw new IllegalArgumentException("만료된 JWT token 입니다.");
+            log.error("Expired JWT token, 만료된 Refresh JWT token 입니다.");
+            throw new IllegalArgumentException("만료된 Refresh JWT token 입니다.");
         } catch (UnsupportedJwtException e) {
-            log.error("Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.");
-            throw new IllegalArgumentException("지원되지 않는 JWT 토큰 입니다.");
+            log.error("Unsupported JWT token, 지원되지 않는 Refresh JWT 토큰 입니다.");
+            throw new IllegalArgumentException("지원되지 않는 Refresh JWT 토큰 입니다.");
         } catch (IllegalArgumentException e) {
-            log.error("JWT claims is empty, 잘못된 JWT 토큰 입니다.");
-            throw new IllegalArgumentException("잘못된 JWT 토큰 입니다.");
+            log.error("JWT claims is empty, 잘못된 Refresh JWT 토큰 입니다.");
+            throw new IllegalArgumentException("잘못된 Refresh JWT 토큰 입니다.");
         }
     }
 

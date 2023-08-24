@@ -13,7 +13,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedHeaders("*")
-                .exposedHeaders("Authorization")
+                .exposedHeaders("Access", "Refresh", "Access-Control-Allow-Origin")
                 .allowedOrigins("http://localhost:3000",
                         "https://front-end-tau-henna.vercel.app",
                         "https://dev-front-end-omega-henna-44.vercel.app",

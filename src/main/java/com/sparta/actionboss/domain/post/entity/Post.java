@@ -53,6 +53,9 @@ public class Post extends Timestamped {
     @OneToMany(mappedBy = "post", orphanRemoval = true)
     private List<Image> imageList;
 
+    @OneToMany(mappedBy = "post", orphanRemoval = true)
+    private List<Comment> commentList;
+
     public Post(PostRequestDto postRequestDto, User user) {
         this.title = postRequestDto.getTitle();
         this.content = postRequestDto.getContent();
