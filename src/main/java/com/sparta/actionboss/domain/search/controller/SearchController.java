@@ -3,7 +3,6 @@ package com.sparta.actionboss.domain.search.controller;
 import com.sparta.actionboss.domain.search.dto.SearchResponseDto;
 import com.sparta.actionboss.domain.search.service.SearchService;
 import com.sparta.actionboss.global.response.CommonResponse;
-import com.sparta.actionboss.domain.search.dto.SearchPostListAndTotalPageResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
