@@ -11,6 +11,7 @@ public class PostModalResponseDto {
     private String address;
     private String nickname;
     private Integer agreeCount;
+    private Boolean done;
 
     public PostModalResponseDto(Post post,String imageUrl, Integer agreeCount) {
         this.postId = post.getPostId();
@@ -19,5 +20,6 @@ public class PostModalResponseDto {
         this.address = post.getAddress();
         this.nickname = post.getUser().getNickname();
         this.agreeCount = agreeCount;
+        this.done = post.isDone();
     }
 }
