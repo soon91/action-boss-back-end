@@ -21,8 +21,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
 @Slf4j(topic = "JWT 검증 및 인가")
 @RequiredArgsConstructor
@@ -33,14 +31,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain) throws ServletException, IOException {
-        String origin = req.getHeader("Origin");
-        List<String> allowedOrigins = Arrays.asList(
-                "http://localhost:3000",
-                "https://front-end-tau-henna.vercel.app",
-                "https://dev-front-end-omega-henna-44.vercel.app",
-                "https://test-eta-khaki.vercel.app",
-                "https://hdaejang.com"
-        );
 
         String tokenValue = jwtUtil.getJwtFromHeader(req);
 
