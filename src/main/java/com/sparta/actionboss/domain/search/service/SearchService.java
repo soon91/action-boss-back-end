@@ -1,5 +1,6 @@
 package com.sparta.actionboss.domain.search.service;
 
+import com.sparta.actionboss.domain.search.dto.SearchListResponseDto;
 import com.sparta.actionboss.domain.search.dto.SearchResponseDto;
 import com.sparta.actionboss.domain.search.entity.Address;
 import com.sparta.actionboss.domain.search.repository.SearchRepository;
@@ -10,6 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static com.sparta.actionboss.global.response.SuccessMessage.SEARCH_SUCCESS;
 
 @Service
@@ -19,14 +23,29 @@ public class SearchService {
 
     private final SearchRepository searchRepository;
 
-    public CommonResponse<SearchResponseDto> searchPostList(String search) {
-
-        if (search == null) {
+    public CommonResponse<SearchResponseDto> searchAddress(String keyword) {
+        if (keyword == null) {
             throw new SearchException(ClientErrorCode.SEARCH_NULL);
         }
 
-        Address searchPost = searchRepository.findByAddressContaining(search);
+        Address searchAddress = searchRepository.findByAddressContaining(keyword);
 
-        return new CommonResponse<>(SEARCH_SUCCESS, new SearchResponseDto(searchPost.getLatitude(), searchPost.getLongitude()));
+        return new CommonResponse<>(SEARCH_SUCCESS, new SearchResponseDto(searchAddress.getLatitude(), searchAddress.getLongitude()));
+    }
+
+    public CommonResponse<List<SearchListResponseDto>> searchAddressList(String keyword) {
+        if (keyword == null) {
+            throw new SearchException(ClientErrorCode.SEARCH_NULL);
+        }
+
+        List<Address> searchAddressList = searchRepository.findByAddressContains(keyword);
+
+        List<SearchListResponseDto> searchListResponseDto = searchAddressList.stream()
+                .map(a -> new SearchListResponseDto(
+                        a.getAddress()
+                ))
+                .collect(Collectors.toList());
+
+        return new CommonResponse<>(SEARCH_SUCCESS, searchListResponseDto);
     }
 }
