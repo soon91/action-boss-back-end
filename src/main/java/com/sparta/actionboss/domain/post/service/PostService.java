@@ -96,6 +96,7 @@ public class PostService {
             User loginUser = userDetails.get().getUser();
             done = postDoneRepository.findByPostAndUser(post, loginUser).isPresent();
             agree = agreeRepository.findByUserAndPost(loginUser, post).isPresent();
+            owner = post.getUser().getNickname().equals(loginUser.getNickname());
             loginUserNickname = loginUser.getNickname();
         }
 
