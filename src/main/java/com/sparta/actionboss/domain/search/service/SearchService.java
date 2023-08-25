@@ -28,7 +28,11 @@ public class SearchService {
             throw new SearchException(ClientErrorCode.SEARCH_NULL);
         }
 
-        Address searchAddress = searchRepository.findByAddressContaining(keyword);
+        Address searchAddress = searchRepository.findByAddress(keyword);
+
+        if (searchAddress == null) {
+            throw new SearchException(ClientErrorCode.SEARCH_NOT_FOUND);
+        }
 
         return new CommonResponse<>(SEARCH_SUCCESS, new SearchResponseDto(searchAddress.getLatitude(), searchAddress.getLongitude()));
     }
@@ -38,7 +42,11 @@ public class SearchService {
             throw new SearchException(ClientErrorCode.SEARCH_NULL);
         }
 
-        List<Address> searchAddressList = searchRepository.findByAddressContains(keyword);
+        List<Address> searchAddressList = searchRepository.findByAddressContaining(keyword);
+
+        if (searchAddressList == null || searchAddressList.isEmpty()) {
+            throw new SearchException(ClientErrorCode.SEARCH_NOT_FOUND);
+        }
 
         List<SearchListResponseDto> searchListResponseDto = searchAddressList.stream()
                 .map(a -> new SearchListResponseDto(

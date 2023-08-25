@@ -37,6 +37,7 @@ public enum ClientErrorCode {
 
     // Search
     SEARCH_NULL(HttpStatus.BAD_REQUEST, "검색어가 없습니다."),
+    SEARCH_NOT_FOUND(HttpStatus.NOT_FOUND, "검색 결과가 없습니다."),
 
     NO_COMMENT(HttpStatus.NOT_FOUND, "존재하지 않는 댓글입니다."),
     NO_PERMISSION_COMMENT_DELETE(HttpStatus.FORBIDDEN, "이 댓글을 삭제할 수 있는 권한이 없습니다.")
