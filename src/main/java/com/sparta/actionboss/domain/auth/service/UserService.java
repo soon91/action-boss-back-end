@@ -67,19 +67,6 @@ public class UserService {
         return new CommonResponse(SIGNUP_SUCCESS, null);
     }
 
-    //    TODO : token이 안넘어 갈 경우를 위해 남겨둠
-//    //로그인
-//    public LoginResponseDto login(LoginRequestDto requestDto){
-//        User user = userRepository.findByEmail(requestDto.getEmail()).orElseThrow(() ->
-//                new LoginException(ClientErrorCode.NO_ACCOUNT));
-//        if(!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())){
-//            throw new LoginException(ClientErrorCode.INVALID_PASSWORDS);
-//        }
-//        String accessToken = jwtUtil.createToken(user.getEmail(), user.getRole());
-//        TokenDto tokenDto = new TokenDto(accessToken);
-//        return new LoginResponseDto(tokenDto.getAccessToken());
-//    }
-
     //로그인
     @Transactional
     public CommonResponse<LoginResponseDto> login(LoginRequestDto requestDto){
@@ -89,8 +76,7 @@ public class UserService {
             throw new LoginException(ClientErrorCode.INVALID_PASSWORDS);
         }
         String accessToken = jwtUtil.createToken(user.getEmail(), user.getRole());
-        TokenDto tokenDto = new TokenDto(accessToken);
-        LoginResponseDto responseDto = new LoginResponseDto(tokenDto.getAccessToken());
+        LoginResponseDto responseDto = new LoginResponseDto(accessToken);
         return new CommonResponse(LOGIN_SUCCESS, responseDto);
     }
 

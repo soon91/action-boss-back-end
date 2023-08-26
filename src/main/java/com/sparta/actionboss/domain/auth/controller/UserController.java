@@ -1,6 +1,8 @@
 package com.sparta.actionboss.domain.auth.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sparta.actionboss.domain.auth.dto.*;
+import com.sparta.actionboss.domain.auth.service.KakaoService;
 import com.sparta.actionboss.domain.auth.service.UserService;
 import com.sparta.actionboss.global.response.CommonResponse;
 import com.sparta.actionboss.global.security.JwtUtil;
@@ -17,19 +19,12 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+    private final KakaoService kakaoService;
 
     @PostMapping("/signup")
     public ResponseEntity<CommonResponse> signup(@RequestBody @Valid SignupRequestDto requestDto){
         return new ResponseEntity<>(userService.signup(requestDto), HttpStatus.CREATED);
     }
-
-//    TODO : token이 안넘어 갈 경우를 위해 남겨둠
-//    @PostMapping("/login")
-//    public userResponseDto login(@RequestBody LoginRequestDto requestDto, HttpServletResponse response){
-//        LoginResponseDto responseDto = userService.login(requestDto);
-//        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, responseDto.getAccessToken());
-//        return new userResponseDto("로그인에 성공하였습니다.");
-//    }
 
     @PostMapping("/login")
     public ResponseEntity<CommonResponse<LoginResponseDto>> login(@RequestBody LoginRequestDto requestDto, HttpServletResponse response){
@@ -37,6 +32,14 @@ public class UserController {
         LoginResponseDto responseDto = commonResponse.getData();
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, responseDto.getAccessToken());
         return new ResponseEntity<>(new CommonResponse<>(commonResponse.getMsg()), HttpStatus.OK);
+    }
+
+    @PostMapping("/kakao")
+    public ResponseEntity<CommonResponse<LoginResponseDto>> kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
+        CommonResponse<LoginResponseDto> commonResponse = kakaoService.kakaoLogin(code);
+        LoginResponseDto responseDto = commonResponse.getData();
+        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, responseDto.getAccessToken());
+        return new ResponseEntity<>(new CommonResponse<>(commonResponse.getMsg()), HttpStatus.CREATED);
     }
 
     @PostMapping("/signup/nicknameCheck")
