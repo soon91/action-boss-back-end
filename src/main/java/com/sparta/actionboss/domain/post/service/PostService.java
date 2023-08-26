@@ -2,7 +2,6 @@ package com.sparta.actionboss.domain.post.service;
 
 import com.sparta.actionboss.domain.auth.entity.User;
 import com.sparta.actionboss.domain.auth.entity.UserRoleEnum;
-import com.sparta.actionboss.domain.post.dto.CommentResponseDto;
 import com.sparta.actionboss.domain.post.dto.PostRequestDto;
 import com.sparta.actionboss.domain.post.dto.PostResponseDto;
 import com.sparta.actionboss.domain.post.entity.Comment;
@@ -69,9 +68,7 @@ public class PostService {
         // 요청별로 폴더생성 -> 저장
         String folderName = "[" + post.getPostId() + "]" + "-" + UUID.randomUUID().toString().substring(19);
 
-        String directoryPath = "images/" + folderName;
-
-        List<String> imageNameList = s3Service.upload(images, directoryPath);
+        List<String> imageNameList = s3Service.upload(images, folderName);
 
         for (String imageName : imageNameList) {
             Image image = new Image(imageName, folderName, post);
@@ -96,7 +93,6 @@ public class PostService {
             User loginUser = userDetails.get().getUser();
             done = postDoneRepository.findByPostAndUser(post, loginUser).isPresent();
             agree = agreeRepository.findByUserAndPost(loginUser, post).isPresent();
-            owner = post.getUser().getNickname().equals(loginUser.getNickname());
             loginUserNickname = loginUser.getNickname();
         }
 
