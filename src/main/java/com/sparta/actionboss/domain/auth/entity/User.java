@@ -28,8 +28,11 @@ public class User extends Timestamped {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private UserRoleEnum role;
+
+    private Long kakaoId;
 
     @OneToMany(mappedBy = "user")
     private List<Post> postList = new ArrayList<>();
@@ -42,5 +45,18 @@ public class User extends Timestamped {
         this.password = password;
         this.email = email;
         this.role = role;
+    }
+
+    public User(String nickname, String password, String email, UserRoleEnum role, Long kakaoId) {
+        this.nickname = nickname;
+        this.password = password;
+        this.email = email;
+        this.role = role;
+        this.kakaoId = kakaoId;
+    }
+
+    public User kakaoIdUpdate(Long kakaoId){
+        this.kakaoId = kakaoId;
+        return this;
     }
 }
