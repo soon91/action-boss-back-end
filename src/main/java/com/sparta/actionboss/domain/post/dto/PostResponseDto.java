@@ -31,7 +31,7 @@ public class PostResponseDto {
     private Boolean postDone;
     private List<CommentResponseDto> comments;
 
-    public PostResponseDto(Post post, List<String> imageURLs, boolean done, boolean owner, boolean agree, List<Comment> comments) {
+    public PostResponseDto(Post post, List<String> imageURLs, boolean done, boolean owner, boolean agree, List<Comment> comments, String loginUserNickname) {
         this.postId = post.getPostId();
         this.title = post.getTitle();
         this.content = post.getContent();
@@ -47,7 +47,7 @@ public class PostResponseDto {
         this.done = done;
         this.owner = owner;
         this.postDone = post.isDone();
-        this.comments = comments.stream().map(CommentResponseDto::new).toList();
+        this.comments = comments.stream().map(comment -> new CommentResponseDto(comment, loginUserNickname)).toList();
     }
 
     public PostResponseDto(Long postId) {

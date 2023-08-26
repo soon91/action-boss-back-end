@@ -2,6 +2,7 @@ package com.sparta.actionboss.domain.post.service;
 
 import com.sparta.actionboss.domain.auth.entity.User;
 import com.sparta.actionboss.domain.auth.entity.UserRoleEnum;
+import com.sparta.actionboss.domain.post.dto.CommentResponseDto;
 import com.sparta.actionboss.domain.post.dto.PostRequestDto;
 import com.sparta.actionboss.domain.post.dto.PostResponseDto;
 import com.sparta.actionboss.domain.post.entity.Comment;
@@ -61,7 +62,6 @@ public class PostService {
         if (images.size() > MAXIMUM_IMAGES) {
             throw new PostException(ClientErrorCode.UPLOAD_MAXIMUM_IMAGE);
         }
-        List<String> imageNames = images.stream().map(MultipartFile::getOriginalFilename).toList();
 
         Post post = new Post(postRequestDto, user);
         postRepository.save(post);
@@ -86,6 +86,7 @@ public class PostService {
         Post post = findPost(postId);
         List<Image> imageList = findImagesByPost(postId);
         List<String> imageURLs = imageUrlPrefix(imageList);
+        String loginUserNickname = "";  // null 이면 안되기 때문에 빈 문자열로 초기화
 
         boolean done = false;
         boolean owner = false;
@@ -95,14 +96,14 @@ public class PostService {
             User loginUser = userDetails.get().getUser();
             done = postDoneRepository.findByPostAndUser(post, loginUser).isPresent();
             agree = agreeRepository.findByUserAndPost(loginUser, post).isPresent();
-
             owner = post.getUser().getNickname().equals(loginUser.getNickname());
+            loginUserNickname = loginUser.getNickname();
         }
 
         // 댓글 가져오기
         List<Comment> comments = commentService.findComments(postId);
 
-        return new CommonResponse<>(GET_POST_MESSAGE, new PostResponseDto(post, imageURLs, done, owner, agree, comments));
+        return new CommonResponse<>(GET_POST_MESSAGE, new PostResponseDto(post, imageURLs, done, owner, agree, comments, loginUserNickname));
     }
 
     @Transactional
