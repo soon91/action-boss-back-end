@@ -39,7 +39,7 @@ public class UserController {
         CommonResponse<LoginResponseDto> commonResponse = kakaoService.kakaoLogin(code);
         LoginResponseDto responseDto = commonResponse.getData();
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, responseDto.getAccessToken());
-        return new ResponseEntity<>(new CommonResponse<>(commonResponse.getMsg()), HttpStatus.CREATED);
+        return new ResponseEntity<>(new CommonResponse<>(commonResponse.getMsg()), HttpStatus.OK);
     }
 
     @PostMapping("/signup/nicknameCheck")
