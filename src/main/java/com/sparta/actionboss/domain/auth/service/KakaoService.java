@@ -9,7 +9,7 @@ import com.sparta.actionboss.domain.auth.entity.User;
 import com.sparta.actionboss.domain.auth.entity.UserRoleEnum;
 import com.sparta.actionboss.domain.auth.repository.UserRepository;
 import com.sparta.actionboss.global.response.CommonResponse;
-import com.sparta.actionboss.global.security.JwtUtil;
+import com.sparta.actionboss.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

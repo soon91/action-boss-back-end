@@ -1,4 +1,4 @@
-package com.sparta.actionboss.global.security;
+package com.sparta.actionboss.global.util;
 
 
 import com.sparta.actionboss.domain.auth.entity.UserRoleEnum;

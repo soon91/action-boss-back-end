@@ -8,6 +8,7 @@ import com.sparta.actionboss.domain.post.repository.PostRepository;
 import com.sparta.actionboss.global.exception.PostException;
 import com.sparta.actionboss.global.exception.errorcode.ClientErrorCode;
 import com.sparta.actionboss.global.response.CommonResponse;
+import com.sparta.actionboss.global.util.EmailUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,7 @@ import static com.sparta.actionboss.global.response.SuccessMessage.*;
 public class PostDoneService {
     private final PostDoneRepository postDoneRepository;
     private final PostRepository postRepository;
+    private final EmailUtil emailUtil;
 
     private static final int MAXIMUM_DONE = 5;    // 해결했어요 최대 개수
 
@@ -36,6 +38,7 @@ public class PostDoneService {
             // 해결했어요 5개 되면 done = true
             if (post.getPostDoneList().size() >= MAXIMUM_DONE) {
                 post.setDone(true);
+                emailUtil.sendDoneEmail(post.getUser(), post);
             }
             return new CommonResponse<>(CREATE_DONE_MESSAGE);
         } else {
