@@ -5,7 +5,7 @@ import com.sparta.actionboss.domain.auth.dto.*;
 import com.sparta.actionboss.domain.auth.service.KakaoService;
 import com.sparta.actionboss.domain.auth.service.UserService;
 import com.sparta.actionboss.global.response.CommonResponse;
-import com.sparta.actionboss.global.security.JwtUtil;
+import com.sparta.actionboss.global.util.JwtUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

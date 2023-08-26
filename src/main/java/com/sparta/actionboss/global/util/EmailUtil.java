@@ -1,13 +1,17 @@
-package com.sparta.actionboss.domain.auth.util;
+package com.sparta.actionboss.global.util;
 
+import com.sparta.actionboss.domain.auth.entity.User;
+import com.sparta.actionboss.domain.post.entity.Post;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
+import java.io.InputStream;
 import java.util.Properties;
 import java.util.Random;
+import java.util.Scanner;
 
 @Component
 public class EmailUtil {
@@ -17,6 +21,7 @@ public class EmailUtil {
     @Value("${email.secret.pw}")
     private String password;
 
+    private final static String donePostNotificationTitle = "[행동대장] 게시글이 해결완료 되었습니다!";
 
     public String makeRandomNumber(){
         String randomStr = "";
@@ -54,7 +59,37 @@ public class EmailUtil {
         javaMailSender.send(m);
     }
 
-    private Properties getMailProperties() {
+    public void sendDoneEmail(User user, Post post) {
+        JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
+        javaMailSender.setHost("smtp.naver.com");
+        javaMailSender.setUsername(id);
+        javaMailSender.setPassword(password);
+        javaMailSender.setPort(465);
+        javaMailSender.setJavaMailProperties(getMailProperties());
+
+        MimeMessage message = javaMailSender.createMimeMessage();
+        MimeMessageHelper messageHelper = new MimeMessageHelper(message, "UTF-8");
+        try {
+            InputStream inputStream = getClass()
+                    .getResourceAsStream("/templates/sendDoneEmailTemplate.html");
+            Scanner scanner = new Scanner(inputStream).useDelimiter("\\A");
+            String template = scanner.hasNext() ? scanner.next() : "";
+
+            String messageContent = template.replace("{username}", user.getNickname())
+                    .replace("{postTitle}", post.getTitle());
+
+            messageHelper.setFrom(id);
+            messageHelper.setTo(user.getEmail());
+            messageHelper.setSubject(donePostNotificationTitle);
+
+            messageHelper.setText(messageContent, true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        javaMailSender.send(message);
+    }
+
+    public Properties getMailProperties() {
         Properties properties = new Properties();
         properties.setProperty("mail.transport.protocol", "smtp");
         properties.setProperty("mail.smtp.auth", "true");

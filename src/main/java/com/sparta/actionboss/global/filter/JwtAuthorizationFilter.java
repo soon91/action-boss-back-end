@@ -1,9 +1,7 @@
 package com.sparta.actionboss.global.filter;
 
 
-import com.sparta.actionboss.domain.auth.entity.User;
-import com.sparta.actionboss.domain.auth.repository.UserRepository;
-import com.sparta.actionboss.global.security.JwtUtil;
+import com.sparta.actionboss.global.util.JwtUtil;
 import com.sparta.actionboss.global.security.UserDetailsServiceImpl;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
