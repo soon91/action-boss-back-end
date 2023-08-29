@@ -19,7 +19,7 @@ public class User extends Timestamped {
     @Column
     private Long userId;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = true, unique = true)
     private String email;
 
     @Column(nullable = false, unique = true)
@@ -51,6 +51,13 @@ public class User extends Timestamped {
         this.nickname = nickname;
         this.password = password;
         this.email = email;
+        this.role = role;
+        this.kakaoId = kakaoId;
+    }
+
+    public User(String nickname, String password, UserRoleEnum role, Long kakaoId) {
+        this.nickname = nickname;
+        this.password = password;
         this.role = role;
         this.kakaoId = kakaoId;
     }

@@ -15,4 +15,9 @@ public class KakaoUserInfoDto {
         this.nickname = nickname;
         this.email = email;
     }
+
+    public KakaoUserInfoDto(Long id, String nickname){
+        this.id = id;
+        this.nickname = nickname;
+    }
 }
