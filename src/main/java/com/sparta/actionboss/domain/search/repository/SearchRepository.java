@@ -1,10 +1,11 @@
 package com.sparta.actionboss.domain.search.repository;
 
-import com.sparta.actionboss.domain.post.entity.Post;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import com.sparta.actionboss.domain.search.entity.Address;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface SearchRepository extends JpaRepository<Post, Long> {
-    Post findByAddressContaining(String search);
+import java.util.List;
+
+public interface SearchRepository extends JpaRepository<Address, Long> {
+    Address findByAddress(String keyword);
+    List<Address> findByAddressContaining(String keyword);
 }

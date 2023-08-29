@@ -53,4 +53,11 @@ public class CustomExceptionHandler {
                 .body(new ErrorResponse(e.getErrorCode().getMsg()));
     }
 
+    @ExceptionHandler(SearchException.class)
+    public ResponseEntity<?> searchExceptionHandler(SearchException e) {
+        return ResponseEntity
+                .status(e.getErrorCode().getStatusCode())
+                .body(new ErrorResponse(e.getErrorCode().getMsg()));
+    }
+
 }

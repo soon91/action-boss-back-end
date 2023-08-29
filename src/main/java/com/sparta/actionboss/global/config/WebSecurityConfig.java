@@ -1,7 +1,7 @@
 package com.sparta.actionboss.global.config;
 
 import com.sparta.actionboss.global.filter.JwtAuthorizationFilter;
-import com.sparta.actionboss.global.security.JwtUtil;
+import com.sparta.actionboss.global.util.JwtUtil;
 import com.sparta.actionboss.global.security.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;

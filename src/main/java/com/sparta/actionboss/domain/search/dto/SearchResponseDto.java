@@ -1,6 +1,5 @@
 package com.sparta.actionboss.domain.search.dto;
 
-import com.sparta.actionboss.domain.post.entity.Post;
 import lombok.Getter;
 
 @Getter
