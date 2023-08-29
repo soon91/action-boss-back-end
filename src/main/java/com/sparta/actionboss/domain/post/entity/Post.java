@@ -45,7 +45,7 @@ public class Post extends Timestamped {
     private User user;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
-    private List<PostDone> postDoneList;
+    private List<Done> postDoneList;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
     private List<Agree> postAgreeList;
