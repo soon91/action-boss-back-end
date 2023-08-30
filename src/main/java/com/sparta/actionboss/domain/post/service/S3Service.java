@@ -2,6 +2,7 @@ package com.sparta.actionboss.domain.post.service;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.*;
+import com.sparta.actionboss.global.exception.PostException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +13,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import static com.sparta.actionboss.global.exception.errorcode.ClientErrorCode.ONLY_PERMIT_IMAGE;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -40,6 +43,10 @@ public class S3Service {
             MultipartFile multipartFile,
             String folderName
     ) throws IOException {
+        System.out.println("multipartFile.getContentType() = " + multipartFile.getContentType());
+        if(!multipartFile.getContentType().startsWith("image")) {
+            throw new PostException(ONLY_PERMIT_IMAGE);
+        }
         String fileName = UUID.randomUUID().toString()
                 .substring(19) + "-" + multipartFile.getOriginalFilename();
         ObjectMetadata objectMetadata = new ObjectMetadata();
