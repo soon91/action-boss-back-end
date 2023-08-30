@@ -2,7 +2,6 @@ package com.sparta.actionboss.global.advice;
 
 import com.sparta.actionboss.global.exception.*;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -56,11 +55,8 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(SearchException.class)
     public ResponseEntity<?> searchExceptionHandler(SearchException e) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Access-Control-Allow-Origin", "*");
         return ResponseEntity
                 .status(e.getErrorCode().getStatusCode())
-                .headers(headers)
                 .body(new ErrorResponse(e.getErrorCode().getMsg()));
     }
 
