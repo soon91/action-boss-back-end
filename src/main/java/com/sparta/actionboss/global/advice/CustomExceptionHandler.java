@@ -25,6 +25,13 @@ public class CustomExceptionHandler {
                 .body(new ErrorResponse(e.getErrorCode().getMsg()));
     }
 
+    @ExceptionHandler(AgreeException.class)
+    public ResponseEntity<?> agreeExceptionHandler(LoginException e) {
+        return ResponseEntity
+                .status(e.getErrorCode().getStatusCode())
+                .body(new ErrorResponse(e.getErrorCode().getMsg()));
+    }
+
     @ExceptionHandler(PostException.class)
     public ResponseEntity<?> postExceptionHandler(PostException e) {
         return ResponseEntity
