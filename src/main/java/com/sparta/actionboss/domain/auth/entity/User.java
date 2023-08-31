@@ -1,5 +1,6 @@
 package com.sparta.actionboss.domain.auth.entity;
 
+import com.sparta.actionboss.domain.mypage.dto.UpdateEmailRequestDto;
 import com.sparta.actionboss.domain.post.entity.Comment;
 import com.sparta.actionboss.domain.post.entity.Post;
 import com.sparta.actionboss.global.entity.Timestamped;
@@ -19,7 +20,7 @@ public class User extends Timestamped {
     @Column
     private Long userId;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = true, unique = true)
     private String email;
 
     @Column(nullable = false, unique = true)
@@ -55,8 +56,19 @@ public class User extends Timestamped {
         this.kakaoId = kakaoId;
     }
 
+    public User(String nickname, String password, UserRoleEnum role, Long kakaoId) {
+        this.nickname = nickname;
+        this.password = password;
+        this.role = role;
+        this.kakaoId = kakaoId;
+    }
+
     public User kakaoIdUpdate(Long kakaoId){
         this.kakaoId = kakaoId;
         return this;
+    }
+
+    public void updateEmail(UpdateEmailRequestDto requestDto){
+        this.email = requestDto.getEmail();
     }
 }

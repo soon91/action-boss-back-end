@@ -5,7 +5,7 @@ import com.sparta.actionboss.domain.auth.dto.*;
 import com.sparta.actionboss.domain.auth.service.KakaoService;
 import com.sparta.actionboss.domain.auth.service.UserService;
 import com.sparta.actionboss.global.response.CommonResponse;
-import com.sparta.actionboss.global.security.JwtUtil;
+import com.sparta.actionboss.global.util.JwtUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<CommonResponse<LoginResponseDto>> login(@RequestBody LoginRequestDto requestDto, HttpServletResponse response){
+    public ResponseEntity<CommonResponse<LoginResponseDto>> login(@RequestBody @Valid LoginRequestDto requestDto, HttpServletResponse response){
         CommonResponse<LoginResponseDto> commonResponse = userService.login(requestDto);
         LoginResponseDto responseDto = commonResponse.getData();
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, responseDto.getAccessToken());
@@ -43,17 +43,17 @@ public class UserController {
     }
 
     @PostMapping("/signup/nicknameCheck")
-    public ResponseEntity<CommonResponse> checkNickname(@RequestBody CheckNicknameRequestDto requestDto){
+    public ResponseEntity<CommonResponse> checkNickname(@RequestBody @Valid CheckNicknameRequestDto requestDto){
         return new ResponseEntity<>(userService.checkNickname(requestDto), HttpStatus.CREATED);
     }
 
     @PostMapping("/signup/emailSend")
-    public ResponseEntity<CommonResponse> sendEmail(@RequestBody SendEmailRequestDto requestDto){
+    public ResponseEntity<CommonResponse> sendEmail(@RequestBody @Valid SendEmailRequestDto requestDto){
         return new ResponseEntity<>(userService.sendEmail(requestDto), HttpStatus.CREATED);
     }
 
     @PostMapping("/signup/emailCheck")
-    public ResponseEntity<CommonResponse> checkEmail(@RequestBody CheckEmailRequestDto requestDto){
+    public ResponseEntity<CommonResponse> checkEmail(@RequestBody @Valid CheckEmailRequestDto requestDto){
         return new ResponseEntity<>(userService.checkEmail(requestDto), HttpStatus.CREATED);
     }
 }

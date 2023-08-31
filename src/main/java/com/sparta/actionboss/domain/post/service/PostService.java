@@ -2,7 +2,6 @@ package com.sparta.actionboss.domain.post.service;
 
 import com.sparta.actionboss.domain.auth.entity.User;
 import com.sparta.actionboss.domain.auth.entity.UserRoleEnum;
-import com.sparta.actionboss.domain.post.dto.CommentResponseDto;
 import com.sparta.actionboss.domain.post.dto.PostRequestDto;
 import com.sparta.actionboss.domain.post.dto.PostResponseDto;
 import com.sparta.actionboss.domain.post.entity.Comment;
@@ -10,7 +9,7 @@ import com.sparta.actionboss.domain.post.entity.Image;
 import com.sparta.actionboss.domain.post.entity.Post;
 import com.sparta.actionboss.domain.post.repository.AgreeRepository;
 import com.sparta.actionboss.domain.post.repository.ImageRepository;
-import com.sparta.actionboss.domain.post.repository.PostDoneRepository;
+import com.sparta.actionboss.domain.post.repository.DoneRepository;
 import com.sparta.actionboss.domain.post.repository.PostRepository;
 import com.sparta.actionboss.global.exception.PostException;
 import com.sparta.actionboss.global.exception.errorcode.ClientErrorCode;
@@ -42,7 +41,7 @@ public class PostService {
 
     private final S3Service s3Service;
     private final PostRepository postRepository;
-    private final PostDoneRepository postDoneRepository;
+    private final DoneRepository doneRepository;
     private final AgreeRepository agreeRepository;
     private final ImageRepository imageRepository;
     private final CommentService commentService;
@@ -69,9 +68,7 @@ public class PostService {
         // 요청별로 폴더생성 -> 저장
         String folderName = "[" + post.getPostId() + "]" + "-" + UUID.randomUUID().toString().substring(19);
 
-        String directoryPath = "images/" + folderName;
-
-        List<String> imageNameList = s3Service.upload(images, directoryPath);
+        List<String> imageNameList = s3Service.upload(images, folderName);
 
         for (String imageName : imageNameList) {
             Image image = new Image(imageName, folderName, post);
@@ -94,7 +91,7 @@ public class PostService {
 
         if (userDetails.isPresent()) {
             User loginUser = userDetails.get().getUser();
-            done = postDoneRepository.findByPostAndUser(post, loginUser).isPresent();
+            done = doneRepository.findByPostAndUser(post, loginUser).isPresent();
             agree = agreeRepository.findByUserAndPost(loginUser, post).isPresent();
             owner = post.getUser().getNickname().equals(loginUser.getNickname());
             loginUserNickname = loginUser.getNickname();

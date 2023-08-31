@@ -6,12 +6,12 @@ import com.sparta.actionboss.domain.auth.entity.User;
 import com.sparta.actionboss.domain.auth.entity.UserRoleEnum;
 import com.sparta.actionboss.domain.auth.repository.EmailRepository;
 import com.sparta.actionboss.domain.auth.repository.UserRepository;
-import com.sparta.actionboss.domain.auth.util.EmailUtil;
+import com.sparta.actionboss.global.util.EmailUtil;
 import com.sparta.actionboss.global.exception.LoginException;
 import com.sparta.actionboss.global.exception.SignupException;
 import com.sparta.actionboss.global.exception.errorcode.ClientErrorCode;
 import com.sparta.actionboss.global.response.CommonResponse;
-import com.sparta.actionboss.global.security.JwtUtil;
+import com.sparta.actionboss.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -64,7 +64,7 @@ public class UserService {
         if(savedUser == null){
             throw new SignupException(ClientErrorCode.SIGNUP_FAILED);
         }
-        return new CommonResponse(SIGNUP_SUCCESS, null);
+        return new CommonResponse(SIGNUP_SUCCESS);
     }
 
     //로그인
@@ -87,14 +87,20 @@ public class UserService {
         if (checkNickname(nickname)) {
             throw new SignupException(ClientErrorCode.DUPLICATE_NICKNAME);
         }
-        return new CommonResponse(AVAILABLE_NICKNAME,null);
+        return new CommonResponse(AVAILABLE_NICKNAME);
     }
 
     @Transactional
     public CommonResponse sendEmail(SendEmailRequestDto requestDto) {
+
+        //이메일이 DB에 있는지 확인
+        userRepository.findByEmail(requestDto.getEmail()).ifPresent(existingUser -> {
+            throw new SignupException(ClientErrorCode.DUPLICATE_EMAIL);
+        });
+
         Optional<Email> email = emailRepository.findByEmail(requestDto.getEmail());
 
-        CommonResponse response = new CommonResponse(SEND_EMAIL_CODE,null);
+        CommonResponse response = new CommonResponse(SEND_EMAIL_CODE);
 
         String successKey = emailUtil.makeRandomNumber();
 
@@ -121,7 +127,7 @@ public class UserService {
     @Transactional
     public CommonResponse checkEmail(CheckEmailRequestDto requestDto) {
         checkEmailSuccessKey(requestDto.getEmail(), requestDto.getSuccessKey());
-        return new CommonResponse(EMAIL_AUTHENTICATE_SUCCESS,null);
+        return new CommonResponse(EMAIL_AUTHENTICATE_SUCCESS);
     }
 
     private long checkEmailSuccessKey(String requestEmail, String successKey) {
