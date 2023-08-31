@@ -17,6 +17,7 @@ public class SuccessMessage {
     public static final String CANCEL_AGREE = "공감해요를 취소하였습니다.";
 
     public static final String SEARCH_SUCCESS = "검색에 성공하였습니다.";
+    public static final String SEARCH_EMPTY = "검색 결과가 없습니다.";
 
     public static final String CREATE_COMMENT_MESSAGE = "댓글 작성에 성공하였습니다.";
     public static final String DELETE_COMMENT_MESSAGE = "댓글 삭제에 성공하였습니다.";
