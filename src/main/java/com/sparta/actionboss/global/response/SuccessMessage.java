@@ -24,8 +24,12 @@ public class SuccessMessage {
     public static final String CREATE_COMMENT_MESSAGE = "댓글 작성에 성공하였습니다.";
     public static final String DELETE_COMMENT_MESSAGE = "댓글 삭제에 성공하였습니다.";
 
+    public static final String GET_NOTIFICATION_MESSAGE = "알림 조회에 성공하였습니다.";
+
 
     public static final String UPDATE_EMAIL = "이메일 등록에 성공하였습니다.";
     public static final String DELETE_ACCOUNT = "회원 탈퇴에 성공하였습니다.";
     public static final String UPDATE_NICKNAME = "닉네임 수정에 성공하였습니다.";
+
+    public static final String READ_NOTIFICATION = "읽은 알림입니다.";
 }

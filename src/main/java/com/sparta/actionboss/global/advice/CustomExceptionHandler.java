@@ -67,4 +67,25 @@ public class CustomExceptionHandler {
                 .body(new ErrorResponse(e.getErrorCode().getMsg()));
     }
 
+    @ExceptionHandler(DoneException.class)
+    public ResponseEntity<?> searchExceptionHandler(DoneException e) {
+        return ResponseEntity
+                .status(e.getErrorCode().getStatusCode())
+                .body(new ErrorResponse(e.getErrorCode().getMsg()));
+    }
+
+    @ExceptionHandler(UserException.class)
+    public ResponseEntity<?> searchExceptionHandler(UserException e) {
+        return ResponseEntity
+                .status(e.getErrorCode().getStatusCode())
+                .body(new ErrorResponse(e.getErrorCode().getMsg()));
+    }
+
+    @ExceptionHandler(NotificationException.class)
+    public ResponseEntity<?> searchExceptionHandler(NotificationException e) {
+        return ResponseEntity
+                .status(e.getErrorCode().getStatusCode())
+                .body(new ErrorResponse(e.getErrorCode().getMsg()));
+    }
+
 }
