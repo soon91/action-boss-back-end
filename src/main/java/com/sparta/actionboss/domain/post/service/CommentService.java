@@ -2,6 +2,7 @@ package com.sparta.actionboss.domain.post.service;
 
 import com.sparta.actionboss.domain.auth.entity.User;
 import com.sparta.actionboss.domain.auth.entity.UserRoleEnum;
+import com.sparta.actionboss.domain.notification.service.NotificationService;
 import com.sparta.actionboss.domain.post.dto.CommentRequestDto;
 import com.sparta.actionboss.domain.post.entity.Comment;
 import com.sparta.actionboss.domain.post.entity.Post;
@@ -24,6 +25,7 @@ import static com.sparta.actionboss.global.response.SuccessMessage.DELETE_COMMEN
 public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
+    private final NotificationService notificationService;
 
 
     // 댓글 작성
@@ -32,6 +34,9 @@ public class CommentService {
         Comment comment = new Comment(post, user, commentRequestDto.getContent());
         commentRepository.save(comment);
 
+        if(comment.getUser().equals(post.getUser())) {
+            notificationService.commentNotification(comment.getId());
+        }
         return new CommonResponse(CREATE_COMMENT_MESSAGE);
 
     }
