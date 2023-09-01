@@ -30,6 +30,7 @@ public enum ClientErrorCode {
     NO_PERMISSION_DELETE(HttpStatus.FORBIDDEN, "이 게시글을 삭제할 수 있는 권한이 없습니다."),
     NO_POST(HttpStatus.NOT_FOUND, "존재하지 않는 게시글입니다."),
     NON_LOGIN_CREATE(HttpStatus.FORBIDDEN, "로그인 후 게시글을 작성할 수 있습니다."),
+    ONLY_PERMIT_IMAGE(HttpStatus.BAD_REQUEST, "이미지 파일 형식만 업로드 할 수 있습니다."),
 
     NO_IMAGE(HttpStatus.NOT_FOUND, "존재하지 않는 이미지입니다."),
 
