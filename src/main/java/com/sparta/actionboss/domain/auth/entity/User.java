@@ -1,6 +1,7 @@
 package com.sparta.actionboss.domain.auth.entity;
 
 import com.sparta.actionboss.domain.mypage.dto.UpdateEmailRequestDto;
+import com.sparta.actionboss.domain.mypage.dto.UpdateNicknameRequestDto;
 import com.sparta.actionboss.domain.post.entity.Comment;
 import com.sparta.actionboss.domain.post.entity.Post;
 import com.sparta.actionboss.global.entity.Timestamped;
@@ -35,10 +36,10 @@ public class User extends Timestamped {
 
     private Long kakaoId;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<Post> postList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<Comment> commentList = new ArrayList<>();
 
     public User(String nickname, String password, String email, UserRoleEnum role) {
@@ -70,5 +71,9 @@ public class User extends Timestamped {
 
     public void updateEmail(UpdateEmailRequestDto requestDto){
         this.email = requestDto.getEmail();
+    }
+
+    public void updateNickname(String nickname){
+        this.nickname = nickname;
     }
 }

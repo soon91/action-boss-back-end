@@ -26,4 +26,6 @@ public class SuccessMessage {
 
 
     public static final String UPDATE_EMAIL = "이메일 등록에 성공하였습니다.";
+    public static final String DELETE_ACCOUNT = "회원 탈퇴에 성공하였습니다.";
+    public static final String UPDATE_NICKNAME = "닉네임 수정에 성공하였습니다.";
 }
