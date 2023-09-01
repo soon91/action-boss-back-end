@@ -32,4 +32,5 @@ public class SuccessMessage {
     public static final String UPDATE_NICKNAME = "닉네임 수정에 성공하였습니다.";
 
     public static final String READ_NOTIFICATION = "읽은 알림입니다.";
+    public static final String SSE_UNSUBSCRIBE = "SSE 연결이 취소되었습니다.";
 }
