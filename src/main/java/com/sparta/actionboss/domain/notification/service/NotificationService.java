@@ -18,6 +18,7 @@ import com.sparta.actionboss.global.exception.*;
 import com.sparta.actionboss.global.exception.errorcode.ClientErrorCode;
 import com.sparta.actionboss.global.response.CommonResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +36,7 @@ import static com.sparta.actionboss.global.response.SuccessMessage.READ_NOTIFICA
 
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class NotificationService {
 
@@ -63,6 +65,7 @@ public class NotificationService {
         try {
             sseEmitter.send(SseEmitter.event()
                     .name("Connect").data("연결되었습니다."));
+            log.info("SSE 연결 성공");
         } catch (IOException e) {
             e.printStackTrace();
         }
