@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class Done extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long doneId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")

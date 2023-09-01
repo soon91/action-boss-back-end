@@ -53,19 +53,13 @@ public class NotificationService {
     private final PostRepository postRepository;
     private final NotificationRepository notificationRepository;
 
-    public static final int SEC = 60;
-    public static final int MIN = 3600;
-    public static final int HOUR = 86400;
-    public static final int DAY = 604800;
-
-
     // 사용자 연결
     public SseEmitter subscribe(Long userId) {
         SseEmitter sseEmitter = new SseEmitter(Long.MAX_VALUE);
         try {
             sseEmitter.send(SseEmitter.event()
                     .name("Connect").data("연결되었습니다."));
-            log.info("SSE 연결 성공");
+            log.info("SSE connection opened for user {}", userId);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -76,6 +70,16 @@ public class NotificationService {
         sseEmitter.onError((e) -> sseEmitters.remove(userId));
 
         return sseEmitter;
+    }
+
+    // 사용자 연결 취소
+    public void unsubscribe(Long userId) {
+        SseEmitter sseEmitter = sseEmitters.get(userId);
+        if (sseEmitter != null) {
+            sseEmitter.complete();
+            sseEmitters.remove(userId);
+            log.info("SSE connection closed for user {}", userId);
+        }
     }
 
     // 알림 조회

@@ -36,8 +36,8 @@ public class DoneService {
         if (!doneRepository.existsDoneByPostAndUser(post, user)) {
             Done done = new Done(post, user);
             doneRepository.save(done);
-            if (!done.getUser().equals(post.getUser())) {
-                notificationService.doneNotification(done.getId());
+            if (!done.getUser().getNickname().equals(post.getUser().getNickname())) {
+                notificationService.doneNotification(done.getDoneId());
             }
 
             // 해결됐어요 5개 되면 done => true

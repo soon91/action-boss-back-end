@@ -30,7 +30,7 @@ public class AgreeService {
         if (!agreeRepository.existsAgreeByUserAndPost(user, post)) {
             Agree agree = new Agree(user, post);
             agreeRepository.save(agree);
-            if (!agree.getUser().equals(post.getUser())) {
+            if (!agree.getUser().getNickname().equals(post.getUser().getNickname())) {
                 notificationService.agreeNotification(agree.getAgreeId());
             }
             return new CommonResponse(CREATE_AGREE, null);
