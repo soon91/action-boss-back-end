@@ -1,7 +1,6 @@
 package com.sparta.actionboss.domain.search.service;
 
 import com.sparta.actionboss.domain.search.dto.SearchListResponseDto;
-import com.sparta.actionboss.domain.search.dto.SearchResponseDto;
 import com.sparta.actionboss.domain.search.entity.Address;
 import com.sparta.actionboss.domain.search.repository.SearchRepository;
 import com.sparta.actionboss.global.response.CommonResponse;
@@ -23,20 +22,6 @@ public class SearchService {
 
     private final SearchRepository searchRepository;
 
-    public CommonResponse<SearchResponseDto> searchAddress(String keyword) {
-        if (keyword == null || keyword.trim().isEmpty()) {
-            return new CommonResponse<>(SEARCH_EMPTY, new SearchResponseDto(null,null));
-        }
-
-        Address searchAddress = searchRepository.findByAddress(keyword);
-
-        if (searchAddress == null) {
-            return new CommonResponse<>(SEARCH_EMPTY, new SearchResponseDto(null,null));
-        }
-
-        return new CommonResponse<>(SEARCH_SUCCESS, new SearchResponseDto(searchAddress.getLatitude(), searchAddress.getLongitude()));
-    }
-
     public CommonResponse<List<SearchListResponseDto>> searchAddressList(String keyword) {
         if (keyword == null || keyword.trim().isEmpty()) {
             return new CommonResponse<>(SEARCH_EMPTY, Collections.emptyList());
@@ -50,7 +35,9 @@ public class SearchService {
 
         List<SearchListResponseDto> searchListResponseDto = searchAddressList.stream()
                 .map(a -> new SearchListResponseDto(
-                        a.getAddress()
+                        a.getAddress(),
+                        a.getLatitude(),
+                        a.getLongitude()
                 ))
                 .collect(Collectors.toList());
 
