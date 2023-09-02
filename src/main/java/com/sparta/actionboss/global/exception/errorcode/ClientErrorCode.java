@@ -17,7 +17,7 @@ public enum ClientErrorCode {
     INVALID_ADMIN_TOKEN(HttpStatus.BAD_REQUEST, "관리자 암호가 일치하지 않습니다."),
     SIGNUP_FAILED(HttpStatus.BAD_REQUEST, "회원가입에 실패하였습니다."),
 
-    NO_ACCOUNT(HttpStatus.UNAUTHORIZED, "가입되지 않은 계정입니다."),
+    NO_ACCOUNT(HttpStatus.NOT_FOUND, "가입되지 않은 계정입니다."),
     INVALID_PASSWORDS(HttpStatus.UNAUTHORIZED, "잘못된 비밀번호 입니다."),
 
     INVALID_REFRESHTOKEN(HttpStatus.BAD_REQUEST, "유효하지 않은 refresh token 입니다."),
@@ -51,6 +51,9 @@ public enum ClientErrorCode {
     // Notification
     NO_NOTIFICATION(HttpStatus.NOT_FOUND, "존재하지 않는 알림입니다."),
     NO_REMISSION_READ(HttpStatus.FORBIDDEN, "해당 알림을 읽을 수 있는 권한이 없습니다."),
+
+    // Mypage
+    REGISTERED_EMAIL(HttpStatus.BAD_REQUEST, "등록된 이메일이 있습니다.")
 
     ;
     private final HttpStatus statusCode;
