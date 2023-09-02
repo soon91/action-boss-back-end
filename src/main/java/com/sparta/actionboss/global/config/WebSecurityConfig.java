@@ -19,6 +19,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -45,26 +47,48 @@ public class WebSecurityConfig {
         return new JwtAuthorizationFilter(jwtUtil, userDetailsService);
     }
 
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        // CSRF 설정
+//        http.csrf((csrf) -> csrf.disable());
+//
+//        http.sessionManagement((sessionManagement) ->
+//                sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//        );
+//
+//        http.authorizeHttpRequests((authorizeHttpRequests) ->
+//                authorizeHttpRequests
+//                        .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+//                        .requestMatchers("/").permitAll()
+//                        .requestMatchers("/api/auth/**").permitAll()
+//                        .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
+//                        .requestMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
+//                        .anyRequest().authenticated()
+//        );
+//
+//        // 필터 관리
+//        http.addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+//
+//        return http.build();
+//    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // CSRF 설정
-        http.csrf((csrf) -> csrf.disable());
 
-        http.sessionManagement((sessionManagement) ->
-                sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        );
+        http.csrf((csrf) -> csrf.disable())
+                .cors(withDefaults()) // Add this line to enable default cors configuration
 
-        http.authorizeHttpRequests((authorizeHttpRequests) ->
-                authorizeHttpRequests
-                        .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                        .requestMatchers("/").permitAll()
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
-                        .requestMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
-                        .anyRequest().authenticated()
-        );
-        // 필터 관리
-        http.addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+                .sessionManagement((sessionManagement) ->
+                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+
+                .authorizeRequests() // Change this line
+                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
+                .requestMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
+                .anyRequest().authenticated();
+
+        http.addFilterBefore(new JwtAuthorizationFilter(jwtUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
