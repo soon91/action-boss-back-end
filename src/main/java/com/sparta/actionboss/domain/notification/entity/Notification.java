@@ -37,14 +37,6 @@ public class Notification extends Timestamped {
         readStatus = this.getReadStatus();
     }
 
-    public Notification(String title, String type, User recipient, Post post) {
-        this.title = title;
-        this.type = type;
-        this.recipient = recipient;
-        this.post = post;
-        readStatus = this.getReadStatus();
-    }
-
     public void setRead() {
         this.readStatus = true;
     }

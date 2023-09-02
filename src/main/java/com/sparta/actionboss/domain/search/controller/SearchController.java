@@ -1,7 +1,6 @@
 package com.sparta.actionboss.domain.search.controller;
 
 import com.sparta.actionboss.domain.search.dto.SearchListResponseDto;
-import com.sparta.actionboss.domain.search.dto.SearchResponseDto;
 import com.sparta.actionboss.domain.search.service.SearchService;
 import com.sparta.actionboss.global.response.CommonResponse;
 import lombok.RequiredArgsConstructor;
@@ -22,13 +21,7 @@ public class SearchController {
     private final SearchService searchService;
 
     @GetMapping("/search")
-    public ResponseEntity<CommonResponse<SearchResponseDto>> searchAddress(@RequestParam String keyword) {
-        return new ResponseEntity<>(searchService.searchAddress(keyword), HttpStatus.OK);
-    }
-
-    @GetMapping("/search/example")
     public ResponseEntity<CommonResponse<List<SearchListResponseDto>>> searchAddressList(@RequestParam String keyword) {
         return new ResponseEntity<>(searchService.searchAddressList(keyword), HttpStatus.OK);
     }
-
 }

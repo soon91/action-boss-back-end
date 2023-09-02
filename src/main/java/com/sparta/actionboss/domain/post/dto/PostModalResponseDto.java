@@ -13,13 +13,13 @@ public class PostModalResponseDto {
     private Integer agreeCount;
     private Boolean done;
 
-    public PostModalResponseDto(Post post,String imageUrl, Integer agreeCount) {
+    public PostModalResponseDto(Post post,String imageUrl) {
         this.postId = post.getPostId();
         this.title = post.getTitle();
         this.thumbnail = imageUrl;
         this.address = post.getAddress();
         this.nickname = post.getUser().getNickname();
-        this.agreeCount = agreeCount;
+        this.agreeCount = post.getAgreeCount();
         this.done = post.isDone();
     }
 }
