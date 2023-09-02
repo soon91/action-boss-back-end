@@ -54,31 +54,31 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
 
     // 사용자 연결
-    public SseEmitter subscribe(Long userId) {
+    public SseEmitter subscribe(User user) {
         SseEmitter sseEmitter = new SseEmitter(Long.MAX_VALUE);
         try {
             sseEmitter.send(SseEmitter.event()
                     .name("Connect").data("연결되었습니다."));
-            log.info("SSE connection opened for user {}", userId);
+            log.info("[OPEN] - SSE connection opened for user {}", user.getNickname());
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        sseEmitters.put(userId, sseEmitter);
-        sseEmitter.onCompletion(() -> sseEmitters.remove(userId));
-        sseEmitter.onTimeout(() -> sseEmitters.remove(userId));
-        sseEmitter.onError((e) -> sseEmitters.remove(userId));
+        sseEmitters.put(user.getUserId(), sseEmitter);
+        sseEmitter.onCompletion(() -> sseEmitters.remove(user.getUserId()));
+        sseEmitter.onTimeout(() -> sseEmitters.remove(user.getUserId()));
+        sseEmitter.onError((e) -> sseEmitters.remove(user.getUserId()));
 
         return sseEmitter;
     }
 
     // 사용자 연결 취소
-    public void unsubscribe(Long userId) {
-        SseEmitter sseEmitter = sseEmitters.get(userId);
+    public void unsubscribe(User user) {
+        SseEmitter sseEmitter = sseEmitters.get(user.getUserId());
         if (sseEmitter != null) {
             sseEmitter.complete();
-            sseEmitters.remove(userId);
-            log.info("SSE connection closed for user {}", userId);
+            sseEmitters.remove(user.getUserId());
+            log.info("[CLOSE] - SSE connection closed for user {}", user.getNickname());
         }
     }
 

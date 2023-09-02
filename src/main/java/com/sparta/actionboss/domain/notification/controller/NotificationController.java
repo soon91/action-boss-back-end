@@ -23,14 +23,14 @@ public class NotificationController {
     public SseEmitter subscribe(
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        return notificationService.subscribe(userDetails.getUser().getUserId());
+        return notificationService.subscribe(userDetails.getUser());
     }
 
     @GetMapping("/unsubscribe")
     public void unsubscribe(
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        notificationService.unsubscribe(userDetails.getUser().getUserId());
+        notificationService.unsubscribe(userDetails.getUser());
     }
 
     @GetMapping("")

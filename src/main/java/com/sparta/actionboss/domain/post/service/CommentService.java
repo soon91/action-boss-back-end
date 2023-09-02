@@ -34,7 +34,7 @@ public class CommentService {
         Comment comment = new Comment(post, user, commentRequestDto.getContent());
         commentRepository.save(comment);
 
-        if(comment.getUser().getNickname().equals(post.getUser().getNickname())) {
+        if(!comment.getUser().getNickname().equals(post.getUser().getNickname())) {
             notificationService.commentNotification(comment.getId());
         }
         return new CommonResponse(CREATE_COMMENT_MESSAGE);
