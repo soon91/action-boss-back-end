@@ -26,7 +26,7 @@ public class CustomExceptionHandler {
     }
 
     @ExceptionHandler(AgreeException.class)
-    public ResponseEntity<?> agreeExceptionHandler(LoginException e) {
+    public ResponseEntity<?> agreeExceptionHandler(AgreeException e) {
         return ResponseEntity
                 .status(e.getErrorCode().getStatusCode())
                 .body(new ErrorResponse(e.getErrorCode().getMsg()));
@@ -88,4 +88,10 @@ public class CustomExceptionHandler {
                 .body(new ErrorResponse(e.getErrorCode().getMsg()));
     }
 
+    @ExceptionHandler(MyPageException.class)
+    public ResponseEntity<?> tokenExceptionHandler(MyPageException e) {
+        return ResponseEntity
+                .status(e.getErrorCode().getStatusCode())
+                .body(new ErrorResponse(e.getErrorCode().getMsg()));
+    }
 }

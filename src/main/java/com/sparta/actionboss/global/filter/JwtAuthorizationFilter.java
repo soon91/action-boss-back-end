@@ -20,6 +20,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+import static com.sparta.actionboss.global.util.JwtUtil.*;
+
 @Slf4j(topic = "JWT 검증 및 인가")
 @RequiredArgsConstructor
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
@@ -30,16 +32,18 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain) throws ServletException, IOException {
 
-        String tokenValue = jwtUtil.getJwtFromHeader(req);
+        String accessTokenValue = jwtUtil.getJwtFromHeader(req, AUTHORIZATION_ACCESS);
 
-        if (StringUtils.hasText(tokenValue)) {
+        log.info("Access token value: {}", accessTokenValue);
 
-            if (!jwtUtil.validateToken(tokenValue)) {
+        if (StringUtils.hasText(accessTokenValue)) {
+
+            if (!jwtUtil.validateAccessToken(accessTokenValue)) {
                 log.error("Token Error");
                 return;
             }
 
-            Claims info = jwtUtil.getUserInfoFromToken(tokenValue);
+            Claims info = jwtUtil.getUserInfoFromAccessToken(accessTokenValue);
 
             try {
                 setAuthentication(info.getSubject());
@@ -53,16 +57,16 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     }
 
     // 인증 처리
-    public void setAuthentication(String email) {
+    public void setAuthentication(String nickname) {
         SecurityContext context = SecurityContextHolder.createEmptyContext();
-        Authentication authentication = createAuthentication(email);
+        Authentication authentication = createAuthentication(nickname);
         context.setAuthentication(authentication);
         SecurityContextHolder.setContext(context);
     }
 
     // 인증 객체 생성
-    private Authentication createAuthentication(String email) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+    private Authentication createAuthentication(String nickname) {
+        UserDetails userDetails = userDetailsService.loadUserByUsername(nickname);
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 }
