@@ -8,8 +8,8 @@ import com.sparta.actionboss.domain.post.entity.Comment;
 import com.sparta.actionboss.domain.post.entity.Image;
 import com.sparta.actionboss.domain.post.entity.Post;
 import com.sparta.actionboss.domain.post.repository.AgreeRepository;
-import com.sparta.actionboss.domain.post.repository.ImageRepository;
 import com.sparta.actionboss.domain.post.repository.DoneRepository;
+import com.sparta.actionboss.domain.post.repository.ImageRepository;
 import com.sparta.actionboss.domain.post.repository.PostRepository;
 import com.sparta.actionboss.global.exception.PostException;
 import com.sparta.actionboss.global.exception.errorcode.ClientErrorCode;
@@ -48,6 +48,7 @@ public class PostService {
 
     private static final int MAXIMUM_IMAGES = 3;    // 이미지 업로드 최대 개수
 
+    // 게시글 작성
     @Transactional
     public CommonResponse createPost(
             PostRequestDto postRequestDto,
@@ -78,6 +79,7 @@ public class PostService {
         return new CommonResponse(CREATE_POST_MESSAGE, new PostResponseDto(post.getPostId()));
     }
 
+    // 게시글 상세 조회
     public CommonResponse<PostResponseDto> getPost(Long postId) {
         Optional<UserDetailsImpl> userDetails = Optional.ofNullable(getUserDetails());
         Post post = findPost(postId);
@@ -103,6 +105,8 @@ public class PostService {
         return new CommonResponse<>(GET_POST_MESSAGE, new PostResponseDto(post, imageURLs, done, owner, agree, comments, loginUserNickname));
     }
 
+
+    // 게시글 업데이트: Only 제목, 내용
     @Transactional
     public CommonResponse updatePost(
             Long postId,
@@ -118,6 +122,8 @@ public class PostService {
         return new CommonResponse(UPDATE_POST_MESSAGE);
     }
 
+
+    // 게시글 삭제
     @Transactional
     public CommonResponse deletePost(
             Long postId,

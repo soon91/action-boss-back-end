@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-
 @Getter
 public class PostResponseDto {
     private final Long postId;

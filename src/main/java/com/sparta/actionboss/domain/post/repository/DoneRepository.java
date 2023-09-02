@@ -9,4 +9,5 @@ import java.util.Optional;
 
 public interface DoneRepository extends JpaRepository<Done, Long> {
     Optional<Done> findByPostAndUser(Post post, User user);
+    boolean existsDoneByPostAndUser(Post post, User user);
 }

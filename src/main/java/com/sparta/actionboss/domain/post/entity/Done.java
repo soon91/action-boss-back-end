@@ -1,6 +1,7 @@
 package com.sparta.actionboss.domain.post.entity;
 
 import com.sparta.actionboss.domain.auth.entity.User;
+import com.sparta.actionboss.global.entity.Timestamped;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,11 +9,10 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Done {
+public class Done extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "done_id")
-    private Long id;
+    private Long doneId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
@@ -22,7 +22,7 @@ public class Done {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public Done(User user, Post post) {
+    public Done(Post post, User user) {
         this.post = post;
         this.user = user;
     }
