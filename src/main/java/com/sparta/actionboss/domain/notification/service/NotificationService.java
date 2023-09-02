@@ -211,7 +211,7 @@ public class NotificationService {
         String title = post.getTitle();
         boolean postDone = post.isDone();
 
-        Notification notification = new Notification(title, "postDone", post.getUser(), post);
+        Notification notification = new Notification(title, "postDone", post.getUser(), post, post.getUser());
         notificationRepository.save(notification);
         LocalDateTime time = notification.getCreatedAt();
 
