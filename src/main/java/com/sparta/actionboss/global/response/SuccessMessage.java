@@ -14,6 +14,7 @@ public class SuccessMessage {
     public static final String SEND_EMAIL_CODE = "이메일 인증 코드을 보냈습니다.";
     public static final String EMAIL_AUTHENTICATE_SUCCESS = "이메일 인증이 완료되었습니다.";
     public static final String AVAILABLE_NICKNAME = "사용 가능한 닉네임입니다.";
+    public static final String CREATE_REFRESHTOKEN = "Refresh Token이 재발급되었습니다.";
 
 
     public static final String CREATE_AGREE = "공감해요를 성공하였습니다.";
@@ -30,6 +31,8 @@ public class SuccessMessage {
     public static final String UPDATE_EMAIL = "이메일 등록에 성공하였습니다.";
     public static final String DELETE_ACCOUNT = "회원 탈퇴에 성공하였습니다.";
     public static final String UPDATE_NICKNAME = "닉네임 수정에 성공하였습니다.";
+    public static final String UPDATE_PASSWORD = "비밀번호 수정에 성공하였습니다.";
+    public static final String GET_MYPAGE = "마이페이지 조회에 성공하였습니다.";
 
     public static final String READ_NOTIFICATION = "읽은 알림입니다.";
     public static final String SSE_UNSUBSCRIBE = "SSE 연결이 취소되었습니다.";
