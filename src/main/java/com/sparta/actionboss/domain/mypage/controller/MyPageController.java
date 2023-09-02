@@ -38,7 +38,7 @@ public class MyPageController {
     //회원탈퇴
     @DeleteMapping("/deleteAccount")
     public ResponseEntity<CommonResponse> deleteAccount(@AuthenticationPrincipal UserDetailsImpl userDetails){
-        return new ResponseEntity<>(myPageService.deleteAccount(userDetails.getUser()), HttpStatus.CREATED);
+        return new ResponseEntity<>(myPageService.deleteAccount(userDetails.getUser()), HttpStatus.OK);
     }
 
     //닉네임 변경

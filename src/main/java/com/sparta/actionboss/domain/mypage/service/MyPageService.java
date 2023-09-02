@@ -32,14 +32,14 @@ public class MyPageService {
     public CommonResponse<MyPageInfoResponseDto> getUserInfo(User user) {
         //유저 확인
         userRepository.findByNickname(user.getNickname()).orElseThrow(
-                ()-> new IllegalArgumentException("해당유저가 존재하지 않습니다."));
+                ()-> new MyPageException(ClientErrorCode.NO_ACCOUNT));
 
         //유저 정보 보내기
         MyPageInfoResponseDto responseDto = new MyPageInfoResponseDto(user.getEmail(), user.getNickname());
         return new CommonResponse(GET_MYPAGE, responseDto);
     }
 
-    //이메일 없는 사람을 확인하고 등록
+    //이메일 등록
     public CommonResponse updateEmail(UpdateEmailRequestDto requestDto, User user) {
         //비어있다면 새로운 이메일 넣어주기
         if(user.getEmail() == null){
@@ -47,7 +47,7 @@ public class MyPageService {
             userRepository.save(user);
             return new CommonResponse(UPDATE_EMAIL);
         } else {
-            throw new SignupException(ClientErrorCode.DUPLICATE_EMAIL);
+            throw new MyPageException(ClientErrorCode.REGISTERED_EMAIL);
         }
     }
 
@@ -55,7 +55,7 @@ public class MyPageService {
     @Transactional
     public CommonResponse deleteAccount(User user) {
         User currentUser = userRepository.findByEmail(user.getEmail()).orElseThrow(
-                ()-> new SignupException(ClientErrorCode.NO_ACCOUNT));
+                ()-> new MyPageException(ClientErrorCode.NO_ACCOUNT));
         userRepository.delete(currentUser);
         return new CommonResponse(DELETE_ACCOUNT);
     }
@@ -67,11 +67,11 @@ public class MyPageService {
 
         Optional<User> existingUserWithNewNickname = userRepository.findByNickname(newNickname);
         if (existingUserWithNewNickname.isPresent()) {
-            throw new SignupException(ClientErrorCode.DUPLICATE_NICKNAME);
+            throw new MyPageException(ClientErrorCode.DUPLICATE_NICKNAME);
         }
 
 //        if(userRepository.findByNickname(newNickname).isPresent()){
-//            throw new SignupException(ClientErrorCode.DUPLICATE_NICKNAME);
+//            throw new MyPageException(ClientErrorCode.DUPLICATE_NICKNAME);
 //        }
 
         user.updateNickname(newNickname);
