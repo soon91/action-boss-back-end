@@ -2,9 +2,11 @@ package com.sparta.actionboss.domain.auth.service;
 
 import com.sparta.actionboss.domain.auth.dto.*;
 import com.sparta.actionboss.domain.auth.entity.Email;
+import com.sparta.actionboss.domain.auth.entity.RefreshToken;
 import com.sparta.actionboss.domain.auth.entity.User;
 import com.sparta.actionboss.domain.auth.entity.UserRoleEnum;
 import com.sparta.actionboss.domain.auth.repository.EmailRepository;
+import com.sparta.actionboss.domain.auth.repository.RefreshTokenRepository;
 import com.sparta.actionboss.domain.auth.repository.UserRepository;
 import com.sparta.actionboss.global.util.EmailUtil;
 import com.sparta.actionboss.global.exception.LoginException;
@@ -12,20 +14,28 @@ import com.sparta.actionboss.global.exception.SignupException;
 import com.sparta.actionboss.global.exception.errorcode.ClientErrorCode;
 import com.sparta.actionboss.global.response.CommonResponse;
 import com.sparta.actionboss.global.util.JwtUtil;
+import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.Optional;
 
 import static com.sparta.actionboss.global.response.SuccessMessage.*;
+import static com.sparta.actionboss.global.util.JwtUtil.*;
 
+@Slf4j(topic = "UserService")
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailRepository emailRepository;
     private final EmailUtil emailUtil;
@@ -70,14 +80,44 @@ public class UserService {
     //로그인
     @Transactional
     public CommonResponse<LoginResponseDto> login(LoginRequestDto requestDto){
+
         User user = userRepository.findByEmail(requestDto.getEmail()).orElseThrow(() ->
                 new LoginException(ClientErrorCode.NO_ACCOUNT));
         if(!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())){
             throw new LoginException(ClientErrorCode.INVALID_PASSWORDS);
         }
-        String accessToken = jwtUtil.createToken(user.getEmail(), user.getRole());
-        LoginResponseDto responseDto = new LoginResponseDto(accessToken);
+        String accessToken = jwtUtil.createAccessToken(user.getNickname(), user.getRole());
+        String refreshToken = jwtUtil.createRefreshToken(user.getNickname());
+
+        LoginResponseDto responseDto = new LoginResponseDto(accessToken, refreshToken);
+
+        RefreshToken refreshTokenEntity = new RefreshToken(refreshToken.substring(7), user.getNickname());
+        refreshTokenRepository.save(refreshTokenEntity);
+
         return new CommonResponse(LOGIN_SUCCESS, responseDto);
+    }
+
+    //토큰 재발행
+    public CommonResponse reissueToken(HttpServletRequest request, HttpServletResponse response) {
+
+        String refreshToken = jwtUtil.getJwtFromHeader(request, AUTHORIZATION_REFRESH);
+
+        if (StringUtils.hasText(refreshToken)) {
+            if (jwtUtil.validateRefreshToken(refreshToken)) {
+
+                //리프레시토큰이 DB에 있는 지 확인
+                refreshTokenRepository.findByRefreshToken(refreshToken).orElseThrow(
+                        ()-> new LoginException(ClientErrorCode.NO_REFRESHTOKEN));
+
+                String nickname = jwtUtil.getUserInfoFromRefreshToken(refreshToken);
+
+                String newAccessToken = jwtUtil.createAccessToken(nickname, UserRoleEnum.USER);
+
+                response.addHeader(JwtUtil.AUTHORIZATION_ACCESS, newAccessToken);
+                return new CommonResponse(CREATE_REFRESHTOKEN);
+            }
+        }
+        throw new LoginException(ClientErrorCode.INVALID_REFRESHTOKEN);
     }
 
     //닉네임 중복확인

@@ -53,8 +53,9 @@ public class KakaoService {
         User kakaoUser = registerKakaoUserIfNeeded(kakaoUserInfo);
 
         // 4. JWT 토큰 반환
-        String createToken = jwtUtil.createToken(kakaoUser.getEmail(), kakaoUser.getRole());
-        LoginResponseDto responseDto = new LoginResponseDto(createToken);
+        String createAccessToken = jwtUtil.createAccessToken(kakaoUser.getEmail(), kakaoUser.getRole());
+        String createRefreshToken = jwtUtil.createRefreshToken(kakaoUser.getEmail());
+        LoginResponseDto responseDto = new LoginResponseDto(createAccessToken, createRefreshToken);
         return new CommonResponse(LOGIN_SUCCESS, responseDto);
     }
 
@@ -76,8 +77,8 @@ public class KakaoService {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
         body.add("client_id", kakaoClientId);
-        body.add("redirect_uri", "http://localhost:8080/api/auth/kakao");
-//        body.add("redirect_uri", "http://localhost:3000/oauth/callback");
+//        body.add("redirect_uri", "http://localhost:8080/api/auth/kakao");
+        body.add("redirect_uri", "http://localhost:3000/oauth/callback");
         body.add("code", code);
 
         RequestEntity<MultiValueMap<String, String>> requestEntity = RequestEntity
@@ -126,13 +127,6 @@ public class KakaoService {
         Long id = jsonNode.get("id").asLong();
         String nickname = jsonNode.get("properties")
                 .get("nickname").asText();
-
-
-//        String email = jsonNode.get("kakao_account")
-//                .get("email").asText();
-//
-//        log.info("카카오 사용자 정보: " + id + ", " + nickname + ", " + email);
-//        return new KakaoUserInfoDto(id, nickname, email);
 
         JsonNode kakaoAccountNode = jsonNode.get("kakao_account");
         String email = null;

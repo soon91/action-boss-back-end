@@ -17,10 +17,17 @@ public enum ClientErrorCode {
     INVALID_ADMIN_TOKEN(HttpStatus.BAD_REQUEST, "관리자 암호가 일치하지 않습니다."),
     SIGNUP_FAILED(HttpStatus.BAD_REQUEST, "회원가입에 실패하였습니다."),
 
-    NO_ACCOUNT(HttpStatus.UNAUTHORIZED, "가입되지 않은 이메일입니다."),
+    NO_ACCOUNT(HttpStatus.UNAUTHORIZED, "가입되지 않은 계정입니다."),
     INVALID_PASSWORDS(HttpStatus.UNAUTHORIZED, "잘못된 비밀번호 입니다."),
 
+    INVALID_REFRESHTOKEN(HttpStatus.BAD_REQUEST, "유효하지 않은 refresh token 입니다."),
+    NO_REFRESHTOKEN(HttpStatus.BAD_REQUEST, "refresh token이 존재하지 않습니다."),
+
+
     NO_AGREE(HttpStatus.NOT_FOUND, "동의해요에 대한 정보가 존재하지 않습니다."),
+    NO_DONE(HttpStatus.NOT_FOUND, "해결됐어요에 대한 정보가 존재하지 않습니다."),
+
+    NO_USER(HttpStatus.NOT_FOUND, "해당 사용자가 없습니다."),
 
     // Post
     UPLOAD_NO_IMAGE(HttpStatus.BAD_REQUEST, "이미지를 1장 이상 업로드 해주세요."),
@@ -32,17 +39,18 @@ public enum ClientErrorCode {
     NON_LOGIN_CREATE(HttpStatus.FORBIDDEN, "로그인 후 게시글을 작성할 수 있습니다."),
 
     NO_IMAGE(HttpStatus.NOT_FOUND, "존재하지 않는 이미지입니다."),
-
-    S3_CONVERT_FAILURE(HttpStatus.INTERNAL_SERVER_ERROR, "파일 전환에 실패했습니다"),
-    S3_TEMP_IMAGE_DELETE_FAILURE(HttpStatus.INTERNAL_SERVER_ERROR, "임시로 저장된 이미지 삭제에 실패하였습니다."),
+    ONLY_PERMIT_IMAGE(HttpStatus.BAD_REQUEST, "이미지 파일만 업로드할 수 있습니다."),
 
     // Search
     SEARCH_NULL(HttpStatus.BAD_REQUEST, "검색어가 없습니다."),
     SEARCH_NOT_FOUND(HttpStatus.NOT_FOUND, "검색 결과가 없습니다."),
 
     NO_COMMENT(HttpStatus.NOT_FOUND, "존재하지 않는 댓글입니다."),
-    NO_PERMISSION_COMMENT_DELETE(HttpStatus.FORBIDDEN, "이 댓글을 삭제할 수 있는 권한이 없습니다.")
+    NO_PERMISSION_COMMENT_DELETE(HttpStatus.FORBIDDEN, "이 댓글을 삭제할 수 있는 권한이 없습니다."),
 
+    // Notification
+    NO_NOTIFICATION(HttpStatus.NOT_FOUND, "존재하지 않는 알림입니다."),
+    NO_REMISSION_READ(HttpStatus.FORBIDDEN, "해당 알림을 읽을 수 있는 권한이 없습니다."),
 
     ;
     private final HttpStatus statusCode;

@@ -1,6 +1,7 @@
 package com.sparta.actionboss.domain.post.service;
 
 import com.sparta.actionboss.domain.auth.entity.User;
+import com.sparta.actionboss.domain.notification.service.NotificationService;
 import com.sparta.actionboss.domain.post.entity.Agree;
 import com.sparta.actionboss.domain.post.entity.Post;
 import com.sparta.actionboss.domain.post.repository.AgreeRepository;
@@ -20,20 +21,24 @@ public class AgreeService {
 
     private final PostRepository postRepository;
     private final AgreeRepository agreeRepository;
+    private final NotificationService notificationService;
 
     public CommonResponse agreePost(Long postId, User user) {
         Post post = postRepository.findById(postId).orElseThrow(
-                ()-> new AgreeException(ClientErrorCode.NO_POST));
+                () -> new AgreeException(ClientErrorCode.NO_POST));
 
-        if(!agreeRepository.existsAgreeByUserAndPost(user, post)){
+        if (!agreeRepository.existsAgreeByUserAndPost(user, post)) {
             Agree agree = new Agree(user, post);
             agreeRepository.save(agree);
-            return new CommonResponse(CREATE_AGREE,null);
+            if (!agree.getUser().getNickname().equals(post.getUser().getNickname())) {
+                notificationService.agreeNotification(agree.getAgreeId());
+            }
+            return new CommonResponse(CREATE_AGREE, null);
         } else {
             Agree agree = agreeRepository.findByUserAndPost(user, post).orElseThrow(
-                    ()-> new AgreeException(ClientErrorCode.NO_AGREE));
+                    () -> new AgreeException(ClientErrorCode.NO_AGREE));
             agreeRepository.delete(agree);
-            return new CommonResponse(CANCEL_AGREE,null);
+            return new CommonResponse(CANCEL_AGREE, null);
         }
     }
 }

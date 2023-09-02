@@ -1,6 +1,7 @@
 package com.sparta.actionboss.domain.post.entity;
 
 import com.sparta.actionboss.domain.auth.entity.User;
+import com.sparta.actionboss.global.entity.Timestamped;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Table(name = "agree")
-public class Agree {
+public class Agree extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long agreeId;

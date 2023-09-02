@@ -6,6 +6,7 @@ import com.sparta.actionboss.domain.auth.service.KakaoService;
 import com.sparta.actionboss.domain.auth.service.UserService;
 import com.sparta.actionboss.global.response.CommonResponse;
 import com.sparta.actionboss.global.util.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,15 +31,26 @@ public class UserController {
     public ResponseEntity<CommonResponse<LoginResponseDto>> login(@RequestBody @Valid LoginRequestDto requestDto, HttpServletResponse response){
         CommonResponse<LoginResponseDto> commonResponse = userService.login(requestDto);
         LoginResponseDto responseDto = commonResponse.getData();
-        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, responseDto.getAccessToken());
+        response.addHeader(JwtUtil.AUTHORIZATION_ACCESS, responseDto.getAccessToken());
+        response.addHeader(JwtUtil.AUTHORIZATION_REFRESH, responseDto.getRefreshToken());
         return new ResponseEntity<>(new CommonResponse<>(commonResponse.getMsg()), HttpStatus.OK);
+    }
+
+    //토큰 재발급
+    @GetMapping("/login/reissueToken")
+    public ResponseEntity<CommonResponse<ReissueTokenResponseDto>> reissueToken(HttpServletRequest request, HttpServletResponse response) {
+        CommonResponse<ReissueTokenResponseDto> commonResponse = userService.reissueToken(request, response);
+//        ReissueTokenResponseDto responseDto = commonResponse.getData();
+//        response.addHeader(JwtUtil.AUTHORIZATION_ACCESS, responseDto.getAccessToken());
+        return new ResponseEntity<>(new CommonResponse<>(commonResponse.getMsg()), HttpStatus.CREATED);
     }
 
     @PostMapping("/kakao")
     public ResponseEntity<CommonResponse<LoginResponseDto>> kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
         CommonResponse<LoginResponseDto> commonResponse = kakaoService.kakaoLogin(code);
         LoginResponseDto responseDto = commonResponse.getData();
-        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, responseDto.getAccessToken());
+        response.addHeader(JwtUtil.AUTHORIZATION_ACCESS, responseDto.getAccessToken());
+        response.addHeader(JwtUtil.AUTHORIZATION_REFRESH, responseDto.getRefreshToken());
         return new ResponseEntity<>(new CommonResponse<>(commonResponse.getMsg()), HttpStatus.OK);
     }
 
