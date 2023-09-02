@@ -1,5 +1,7 @@
 package com.sparta.actionboss.domain.mypage.controller;
 
+import com.sparta.actionboss.domain.auth.dto.ReissueTokenResponseDto;
+import com.sparta.actionboss.domain.mypage.dto.MyPageInfoResponseDto;
 import com.sparta.actionboss.domain.mypage.dto.UpdateEmailRequestDto;
 import com.sparta.actionboss.domain.mypage.dto.UpdateNicknameRequestDto;
 import com.sparta.actionboss.domain.mypage.dto.UpdatePasswordRequestDto;
@@ -21,6 +23,11 @@ public class MyPageController {
 
     private final MyPageService myPageService;
 
+    //마이페이지 조회
+    @GetMapping("/getUserInfo")
+    public ResponseEntity<CommonResponse<MyPageInfoResponseDto>> getUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        return new ResponseEntity<>(myPageService.getUserInfo(userDetails.getUser()), HttpStatus.OK);
+    }
 
     //이메일 등록
     @PatchMapping("/updateEmail")

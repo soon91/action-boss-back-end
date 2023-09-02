@@ -50,10 +50,7 @@ public enum ClientErrorCode {
 
     // Notification
     NO_NOTIFICATION(HttpStatus.NOT_FOUND, "존재하지 않는 알림입니다."),
-    NO_REMISSION_READ(HttpStatus.FORBIDDEN, "해당 알림을 읽을 수 있는 권한이 없습니다.")
-    // MyPage
-    SAME_PASSWORD(HttpStatus.UNAUTHORIZED, "현재비밀번호와 동일한 비밀번호입니다.")
-
+    NO_REMISSION_READ(HttpStatus.FORBIDDEN, "해당 알림을 읽을 수 있는 권한이 없습니다."),
 
     ;
     private final HttpStatus statusCode;
