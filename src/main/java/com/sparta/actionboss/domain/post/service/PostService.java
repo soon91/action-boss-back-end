@@ -1,7 +1,6 @@
 package com.sparta.actionboss.domain.post.service;
 
 import com.sparta.actionboss.domain.auth.entity.User;
-import com.sparta.actionboss.domain.auth.entity.UserRoleEnum;
 import com.sparta.actionboss.domain.post.dto.PostRequestDto;
 import com.sparta.actionboss.domain.post.dto.PostResponseDto;
 import com.sparta.actionboss.domain.post.entity.Comment;
@@ -95,7 +94,7 @@ public class PostService {
             User loginUser = userDetails.get().getUser();
             done = doneRepository.findByPostAndUser(post, loginUser).isPresent();
             agree = agreeRepository.findByUserAndPost(loginUser, post).isPresent();
-            owner = post.getUser().getNickname().equals(loginUser.getNickname());
+            owner = post.getUser().getUserId().equals(loginUser.getUserId());
             loginUserNickname = loginUser.getNickname();
         }
 
@@ -161,10 +160,8 @@ public class PostService {
     // 권한 확인
     private boolean hasAuthority(Post post, User user) {
         return post.getUser()
-                .getNickname()
-                .equals(user.getNickname())
-                ||
-                user.getRole().equals(UserRoleEnum.ADMIN);
+                .getUserId()
+                .equals(user.getUserId());
     }
 
     private boolean limitImage(List<MultipartFile> images) {
