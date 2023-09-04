@@ -35,7 +35,6 @@ public class S3Service {
             String fileName = upload(image, folderName);
             fileNameList.add(fileName);
         }
-        System.out.println("fileNameList = " + fileNameList);
         return fileNameList;
     }
 
@@ -43,7 +42,6 @@ public class S3Service {
             MultipartFile multipartFile,
             String folderName
     ) throws IOException {
-        System.out.println("multipartFile.getContentType() = " + multipartFile.getContentType());
         if(!multipartFile.getContentType().startsWith("image")) {
             throw new PostException(ClientErrorCode.ONLY_PERMIT_IMAGE);
         }
