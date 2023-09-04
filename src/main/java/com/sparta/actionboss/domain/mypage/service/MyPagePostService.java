@@ -39,13 +39,13 @@ public class MyPagePostService {
     public CommonResponse<PagingResponseDto> getMyAgrees(User user, Pageable pageable) {
         Page<Agree> agrees = agreeRepository.findAgreeByUserId(user.getUserId(), pageable);
         List<Post> agreesPosts = new ArrayList<>();
+        List<MyPagePostsResponseDto> myPagePostsResponseDtoList = new ArrayList<>();
         for (Agree agree : agrees) {
             Post post = postRepository.findById(agree.getPost().getPostId()).orElseThrow(
                     () -> new PostException(ClientErrorCode.NO_POST));
             agreesPosts.add(post);
+            myPagePostsResponseDtoList.add(new MyPagePostsResponseDto(post, agree));
         }
-        List<MyPagePostsResponseDto> myPagePostsResponseDtoList = agreesPosts.stream()
-                .map(MyPagePostsResponseDto::new).toList();
         PagingResponseDto pageInfoResponseDto = new PagingResponseDto(
                 agrees.getTotalPages(),
                 agrees.getNumber(),
@@ -57,13 +57,13 @@ public class MyPagePostService {
     public CommonResponse<PagingResponseDto> getMyComments(User user, Pageable pageable) {
         Page<Comment> comments = commentRepository.findCommentsByUserId(user.getUserId(), pageable);
         List<Post> commentPosts = new ArrayList<>();
+        List<MyPagePostsResponseDto> myPagePostsResponseDtoList = new ArrayList<>();
         for (Comment comment : comments) {
             Post post = postRepository.findById(comment.getPost().getPostId()).orElseThrow(
                     () -> new PostException(ClientErrorCode.NO_POST));
             commentPosts.add(post);
+            myPagePostsResponseDtoList.add(new MyPagePostsResponseDto(post, comment));
         }
-        List<MyPagePostsResponseDto> myPagePostsResponseDtoList = commentPosts.stream()
-                .map(MyPagePostsResponseDto::new).toList();
         PagingResponseDto pagingResponseDto = new PagingResponseDto(
                 comments.getTotalPages(),
                 comments.getNumber(),
