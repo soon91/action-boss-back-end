@@ -41,7 +41,7 @@ public class MyPageService {
             email = "";
         }
         //유저 정보 보내기
-        MyPageInfoResponseDto responseDto = new MyPageInfoResponseDto(user.getEmail(), user.getNickname());
+        MyPageInfoResponseDto responseDto = new MyPageInfoResponseDto(email, nickname);
         return new CommonResponse(GET_MYPAGE, responseDto);
     }
 
