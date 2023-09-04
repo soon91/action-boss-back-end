@@ -1,15 +1,16 @@
 package com.sparta.actionboss.domain.mypage.service;
 
+import com.sparta.actionboss.domain.auth.entity.RefreshToken;
 import com.sparta.actionboss.domain.auth.entity.User;
+import com.sparta.actionboss.domain.auth.repository.RefreshTokenRepository;
 import com.sparta.actionboss.domain.auth.repository.UserRepository;
-import com.sparta.actionboss.domain.mypage.dto.MyPageInfoResponseDto;
-import com.sparta.actionboss.domain.mypage.dto.UpdateEmailRequestDto;
-import com.sparta.actionboss.domain.mypage.dto.UpdateNicknameRequestDto;
-import com.sparta.actionboss.domain.mypage.dto.UpdatePasswordRequestDto;
+import com.sparta.actionboss.domain.mypage.dto.*;
 import com.sparta.actionboss.global.exception.MyPageException;
 import com.sparta.actionboss.global.exception.SignupException;
 import com.sparta.actionboss.global.exception.errorcode.ClientErrorCode;
 import com.sparta.actionboss.global.response.CommonResponse;
+import com.sparta.actionboss.global.util.JwtUtil;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,8 +26,11 @@ import static com.sparta.actionboss.global.response.SuccessMessage.*;
 @RequiredArgsConstructor
 public class MyPageService {
 
+    private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RefreshTokenRepository refreshTokenRepository;
+
 
     //마이페이지 유저정보 조회
     public CommonResponse<MyPageInfoResponseDto> getUserInfo(User user) {
@@ -68,7 +72,7 @@ public class MyPageService {
 
     //닉네임 수정
     @Transactional
-    public CommonResponse updateNickname(UpdateNicknameRequestDto requestDto, User user) {
+    public CommonResponse<UpdateNicknameResponseDto> updateNickname(UpdateNicknameRequestDto requestDto, User user, HttpServletResponse response) {
         String newNickname = requestDto.getNickname();
 
         Optional<User> existingUserWithNewNickname = userRepository.findByNickname(newNickname);
@@ -80,11 +84,22 @@ public class MyPageService {
 //            throw new MyPageException(ClientErrorCode.DUPLICATE_NICKNAME);
 //        }
 
+        String accessToken = jwtUtil.createAccessToken(newNickname, user.getRole());
+        String refreshToken = jwtUtil.createRefreshToken(newNickname);
+
+        RefreshToken refreshTokenEntity = new RefreshToken(refreshToken.substring(7), user.getNickname());
+        refreshTokenRepository.save(refreshTokenEntity);
+
+
         user.updateNickname(newNickname);
         userRepository.save(user);
 
+        UpdateNicknameResponseDto responseDto = new UpdateNicknameResponseDto(accessToken, refreshToken);
 
-        return new CommonResponse(UPDATE_NICKNAME);
+        response.addHeader(JwtUtil.AUTHORIZATION_ACCESS, accessToken);
+        response.addHeader(JwtUtil.AUTHORIZATION_REFRESH, refreshToken);
+
+        return new CommonResponse(UPDATE_NICKNAME, responseDto);
     }
 
     //비밀번호 변경

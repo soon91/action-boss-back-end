@@ -1,13 +1,11 @@
 package com.sparta.actionboss.domain.mypage.controller;
 
 import com.sparta.actionboss.domain.auth.dto.ReissueTokenResponseDto;
-import com.sparta.actionboss.domain.mypage.dto.MyPageInfoResponseDto;
-import com.sparta.actionboss.domain.mypage.dto.UpdateEmailRequestDto;
-import com.sparta.actionboss.domain.mypage.dto.UpdateNicknameRequestDto;
-import com.sparta.actionboss.domain.mypage.dto.UpdatePasswordRequestDto;
+import com.sparta.actionboss.domain.mypage.dto.*;
 import com.sparta.actionboss.domain.mypage.service.MyPageService;
 import com.sparta.actionboss.global.response.CommonResponse;
 import com.sparta.actionboss.global.security.UserDetailsImpl;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
@@ -43,8 +41,10 @@ public class MyPageController {
 
     //닉네임 변경
     @PatchMapping("/updateNickname")
-    public ResponseEntity<CommonResponse> updateNickname(@RequestBody @Valid UpdateNicknameRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
-        return new ResponseEntity<>(myPageService.updateNickname(requestDto, userDetails.getUser()), HttpStatus.CREATED);
+    public ResponseEntity<CommonResponse<UpdateNicknameResponseDto>> updateNickname(@RequestBody @Valid UpdateNicknameRequestDto requestDto, HttpServletResponse response, @AuthenticationPrincipal UserDetailsImpl userDetails){
+//        return new ResponseEntity<>(myPageService.updateNickname(requestDto, userDetails.getUser()), HttpStatus.CREATED);
+        CommonResponse<UpdateNicknameResponseDto> commonResponse = myPageService.updateNickname(requestDto, userDetails.getUser(), response);
+        return new ResponseEntity<>(new CommonResponse<>(commonResponse.getMsg()), HttpStatus.OK);
     }
 
     //비밀번호 변경

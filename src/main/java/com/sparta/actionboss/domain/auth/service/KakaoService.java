@@ -53,8 +53,8 @@ public class KakaoService {
         User kakaoUser = registerKakaoUserIfNeeded(kakaoUserInfo);
 
         // 4. JWT 토큰 반환
-        String createAccessToken = jwtUtil.createAccessToken(kakaoUser.getUserId(), kakaoUser.getRole());
-        String createRefreshToken = jwtUtil.createRefreshToken(kakaoUser.getUserId());
+        String createAccessToken = jwtUtil.createAccessToken(kakaoUser.getNickname(), kakaoUser.getRole());
+        String createRefreshToken = jwtUtil.createRefreshToken(kakaoUser.getNickname());
         LoginResponseDto responseDto = new LoginResponseDto(createAccessToken, createRefreshToken);
         return new CommonResponse(LOGIN_SUCCESS, responseDto);
     }
