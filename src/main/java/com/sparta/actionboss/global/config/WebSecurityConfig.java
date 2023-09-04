@@ -1,8 +1,8 @@
 package com.sparta.actionboss.global.config;
 
 import com.sparta.actionboss.global.filter.JwtAuthorizationFilter;
-import com.sparta.actionboss.global.util.JwtUtil;
 import com.sparta.actionboss.global.security.UserDetailsServiceImpl;
+import com.sparta.actionboss.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -47,48 +47,28 @@ public class WebSecurityConfig {
         return new JwtAuthorizationFilter(jwtUtil, userDetailsService);
     }
 
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        // CSRF 설정
-//        http.csrf((csrf) -> csrf.disable());
-//
-//        http.sessionManagement((sessionManagement) ->
-//                sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//        );
-//
-//        http.authorizeHttpRequests((authorizeHttpRequests) ->
-//                authorizeHttpRequests
-//                        .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-//                        .requestMatchers("/").permitAll()
-//                        .requestMatchers("/api/auth/**").permitAll()
-//                        .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
-//                        .requestMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
-//                        .anyRequest().authenticated()
-//        );
-//
-//        // 필터 관리
-//        http.addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
-//
-//        return http.build();
-//    }
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+// CSRF 설정
+        http.cors(withDefaults())
+                .csrf((csrf) -> csrf.disable());
 
-        http.csrf((csrf) -> csrf.disable())
-                .cors(withDefaults()) // Add this line to enable default cors configuration
+        http.sessionManagement((sessionManagement) ->
+                sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        );
 
-                .sessionManagement((sessionManagement) ->
-                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
+        http.authorizeHttpRequests((authorizeHttpRequests) ->
+                authorizeHttpRequests
+                        .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                        .requestMatchers("/").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
+                        .anyRequest().authenticated()
+        );
 
-                .authorizeRequests() // Change this line
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
-                .requestMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
-                .anyRequest().authenticated();
-
-        http.addFilterBefore(new JwtAuthorizationFilter(jwtUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class);
+        // 필터 관리
+        http.addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
