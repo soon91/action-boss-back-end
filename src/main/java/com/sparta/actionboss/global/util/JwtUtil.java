@@ -46,8 +46,8 @@ public class JwtUtil {
     public String createAccessToken(String nickname, UserRoleEnum role) {
         Date date = new Date();
 
-//        long TOKEN_TIME = 60 * 60 * 1000L; // 60분
-        long TOKEN_TIME = 1 * 60 * 1000L; //     1분(test용)
+        long TOKEN_TIME = 60 * 60 * 1000L; // 60분
+//        long TOKEN_TIME = 1 * 60 * 1000L; //     1분(test용)
 
         return BEARER_PREFIX +
                 Jwts.builder()
@@ -62,8 +62,8 @@ public class JwtUtil {
     public String createRefreshToken(String nickname) {
         Date date = new Date();
 
-//        long TOKEN_TIME = 7 * 24 * 60 * 60 * 1000L;   //일주일
-        long TOKEN_TIME = 5 * 60 * 1000L; //     5분(test용)
+        long TOKEN_TIME = 7 * 24 * 60 * 60 * 1000L;   //일주일
+//        long TOKEN_TIME = 5 * 60 * 1000L; //     5분(test용)
 
         return BEARER_PREFIX +
                 Jwts.builder()

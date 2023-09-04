@@ -49,7 +49,7 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-// CSRF 설정
+        // CSRF 설정
         http.cors(withDefaults())
                 .csrf((csrf) -> csrf.disable());
 
