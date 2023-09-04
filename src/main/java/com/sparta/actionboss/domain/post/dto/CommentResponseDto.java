@@ -22,7 +22,7 @@ public class CommentResponseDto {
 
     public CommentResponseDto(Comment comment, String loginUserNickname) {
         this.id = comment.getId();
-        this.nickname = comment.getNickname();
+        this.nickname = comment.getUser().getNickname();
         this.content = comment.getContent();
         this.createdDay = comment.getCreatedAt();
         this.createdTime = comment.getCreatedAt();
