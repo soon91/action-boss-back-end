@@ -2,7 +2,10 @@ package com.sparta.actionboss.domain.auth.entity;
 
 import com.sparta.actionboss.domain.mypage.dto.UpdateEmailRequestDto;
 import com.sparta.actionboss.domain.mypage.dto.UpdateNicknameRequestDto;
+import com.sparta.actionboss.domain.notification.entity.Notification;
+import com.sparta.actionboss.domain.post.entity.Agree;
 import com.sparta.actionboss.domain.post.entity.Comment;
+import com.sparta.actionboss.domain.post.entity.Done;
 import com.sparta.actionboss.domain.post.entity.Post;
 import com.sparta.actionboss.global.entity.Timestamped;
 import jakarta.persistence.*;
@@ -41,6 +44,18 @@ public class User extends Timestamped {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<Comment> commentList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "actor", orphanRemoval = true)
+    private List<Notification> actorList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "recipient", orphanRemoval = true)
+    private List<Notification> recipientList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", orphanRemoval = true)
+    private List<Done> doneList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", orphanRemoval = true)
+    private List<Agree> agreeList = new ArrayList<>();
 
     public User(String nickname, String password, String email, UserRoleEnum role) {
         this.nickname = nickname;

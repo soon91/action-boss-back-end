@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
-    @Query("SELECT i FROM Notification i WHERE i.recipient.userId = :userId")
+    @Query("SELECT i FROM Notification i WHERE i.recipient.userId = :userId ORDER BY i.createdAt DESC")
     List<Notification> findNotificationByUserId(@Param("userId") Long userId);
 
     void deleteByCreatedAtBefore(LocalDateTime localDateTime);
