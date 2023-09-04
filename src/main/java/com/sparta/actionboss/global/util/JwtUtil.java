@@ -43,7 +43,7 @@ public class JwtUtil {
     }
 
     // 토큰 생성
-    public String createAccessToken(String nickname, UserRoleEnum role) {
+    public String createAccessToken(Long userId, UserRoleEnum role) {
         Date date = new Date();
 
 //        long TOKEN_TIME = 60 * 60 * 1000L; // 60분
@@ -51,7 +51,7 @@ public class JwtUtil {
 
         return BEARER_PREFIX +
                 Jwts.builder()
-                        .setSubject(nickname)
+                        .setSubject(String.valueOf(userId))
                         .claim(AUTHORIZATION_KEY, role)
                         .setExpiration(new Date(date.getTime() + TOKEN_TIME))
                         .setIssuedAt(date)
@@ -59,7 +59,7 @@ public class JwtUtil {
                         .compact();
     }
 
-    public String createRefreshToken(String nickname) {
+    public String createRefreshToken(Long userId) {
         Date date = new Date();
 
 //        long TOKEN_TIME = 7 * 24 * 60 * 60 * 1000L;   //일주일분
@@ -67,7 +67,7 @@ public class JwtUtil {
 
         return BEARER_PREFIX +
                 Jwts.builder()
-                        .setSubject(nickname)
+                        .setSubject(String.valueOf(userId))
                         .setExpiration(new Date(date.getTime() + TOKEN_TIME))
                         .setIssuedAt(date)
                         .signWith(refreshTokenKey, signatureAlgorithm)

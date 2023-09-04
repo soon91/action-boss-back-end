@@ -31,9 +31,15 @@ public class MyPageService {
     //마이페이지 유저정보 조회
     public CommonResponse<MyPageInfoResponseDto> getUserInfo(User user) {
         //유저 확인
-        userRepository.findByNickname(user.getNickname()).orElseThrow(
+        User currentUser = userRepository.findByNickname(user.getNickname()).orElseThrow(
                 ()-> new MyPageException(ClientErrorCode.NO_ACCOUNT));
 
+        String email = currentUser.getEmail();
+        String nickname = currentUser.getNickname();
+
+        if(email == null){
+            email = "";
+        }
         //유저 정보 보내기
         MyPageInfoResponseDto responseDto = new MyPageInfoResponseDto(user.getEmail(), user.getNickname());
         return new CommonResponse(GET_MYPAGE, responseDto);
