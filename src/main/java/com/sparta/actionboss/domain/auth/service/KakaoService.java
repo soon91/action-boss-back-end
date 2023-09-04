@@ -78,7 +78,8 @@ public class KakaoService {
         body.add("grant_type", "authorization_code");
         body.add("client_id", kakaoClientId);
 //        body.add("redirect_uri", "http://localhost:8080/api/auth/kakao");
-        body.add("redirect_uri", "http://localhost:3000/oauth/callback");
+//        body.add("redirect_uri", "http://localhost:3000/oauth/callback");
+        body.add("redirect_uri", "https://hdaejang.com/oauth/callback");
         body.add("code", code);
 
         RequestEntity<MultiValueMap<String, String>> requestEntity = RequestEntity
