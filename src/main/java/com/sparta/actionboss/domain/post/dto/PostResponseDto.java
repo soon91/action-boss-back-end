@@ -2,6 +2,7 @@ package com.sparta.actionboss.domain.post.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.sparta.actionboss.domain.auth.entity.User;
 import com.sparta.actionboss.domain.post.entity.Comment;
 import com.sparta.actionboss.domain.post.entity.Post;
 import lombok.Getter;
@@ -30,7 +31,7 @@ public class PostResponseDto {
     private Boolean postDone;
     private List<CommentResponseDto> comments;
 
-    public PostResponseDto(Post post, List<String> imageURLs, boolean done, boolean owner, boolean agree, List<Comment> comments, String loginUserNickname) {
+    public PostResponseDto(Post post, List<String> imageURLs, boolean done, boolean owner, boolean agree, List<Comment> comments, User loginUser) {
         this.postId = post.getPostId();
         this.title = post.getTitle();
         this.content = post.getContent();
@@ -46,7 +47,7 @@ public class PostResponseDto {
         this.done = done;
         this.owner = owner;
         this.postDone = post.isDone();
-        this.comments = comments.stream().map(comment -> new CommentResponseDto(comment, loginUserNickname)).toList();
+        this.comments = comments.stream().map(comment -> new CommentResponseDto(comment, loginUser)).toList();
     }
 
     public PostResponseDto(Long postId) {

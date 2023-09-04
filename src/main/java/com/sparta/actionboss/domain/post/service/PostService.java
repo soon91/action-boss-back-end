@@ -1,6 +1,7 @@
 package com.sparta.actionboss.domain.post.service;
 
 import com.sparta.actionboss.domain.auth.entity.User;
+import com.sparta.actionboss.domain.auth.entity.UserRoleEnum;
 import com.sparta.actionboss.domain.post.dto.PostRequestDto;
 import com.sparta.actionboss.domain.post.dto.PostResponseDto;
 import com.sparta.actionboss.domain.post.entity.Comment;
@@ -84,24 +85,23 @@ public class PostService {
         Post post = findPost(postId);
         List<Image> imageList = findImagesByPost(postId);
         List<String> imageURLs = imageUrlPrefix(imageList);
-        String loginUserNickname = "";  // null 이면 안되기 때문에 빈 문자열로 초기화
+        User loginUser = null;  // null 이면 안되기 때문에 빈 문자열로 초기화
 
         boolean done = false;
         boolean owner = false;
         boolean agree = false;
 
         if (userDetails.isPresent()) {
-            User loginUser = userDetails.get().getUser();
+            loginUser = userDetails.get().getUser();
             done = doneRepository.findByPostAndUser(post, loginUser).isPresent();
             agree = agreeRepository.findByUserAndPost(loginUser, post).isPresent();
-            owner = post.getUser().getUserId().equals(loginUser.getUserId());
-            loginUserNickname = loginUser.getNickname();
+            owner = hasAuthority(post, loginUser);
         }
 
         // 댓글 가져오기
         List<Comment> comments = commentService.findComments(postId);
 
-        return new CommonResponse<>(GET_POST_MESSAGE, new PostResponseDto(post, imageURLs, done, owner, agree, comments, loginUserNickname));
+        return new CommonResponse<>(GET_POST_MESSAGE, new PostResponseDto(post, imageURLs, done, owner, agree, comments, loginUser));
     }
 
 
@@ -161,7 +161,9 @@ public class PostService {
     private boolean hasAuthority(Post post, User user) {
         return post.getUser()
                 .getUserId()
-                .equals(user.getUserId());
+                .equals(user.getUserId())
+                ||
+                user.getRole().equals(UserRoleEnum.ADMIN);
     }
 
     private boolean limitImage(List<MultipartFile> images) {
