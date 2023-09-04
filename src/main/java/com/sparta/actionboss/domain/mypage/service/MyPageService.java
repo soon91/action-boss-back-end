@@ -44,6 +44,7 @@ public class MyPageService {
         if(email == null){
             email = "";
         }
+        
         //유저 정보 보내기
         MyPageInfoResponseDto responseDto = new MyPageInfoResponseDto(email, nickname);
         return new CommonResponse(GET_MYPAGE, responseDto);
@@ -64,7 +65,7 @@ public class MyPageService {
     //회원탈퇴
     @Transactional
     public CommonResponse deleteAccount(User user) {
-        User currentUser = userRepository.findByEmail(user.getEmail()).orElseThrow(
+        User currentUser = userRepository.findByNickname(user.getNickname()).orElseThrow(
                 ()-> new MyPageException(ClientErrorCode.NO_ACCOUNT));
         userRepository.delete(currentUser);
         return new CommonResponse(DELETE_ACCOUNT);

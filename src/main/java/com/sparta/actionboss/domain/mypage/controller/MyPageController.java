@@ -42,9 +42,8 @@ public class MyPageController {
     //닉네임 변경
     @PatchMapping("/updateNickname")
     public ResponseEntity<CommonResponse<UpdateNicknameResponseDto>> updateNickname(@RequestBody @Valid UpdateNicknameRequestDto requestDto, HttpServletResponse response, @AuthenticationPrincipal UserDetailsImpl userDetails){
-//        return new ResponseEntity<>(myPageService.updateNickname(requestDto, userDetails.getUser()), HttpStatus.CREATED);
         CommonResponse<UpdateNicknameResponseDto> commonResponse = myPageService.updateNickname(requestDto, userDetails.getUser(), response);
-        return new ResponseEntity<>(new CommonResponse<>(commonResponse.getMsg()), HttpStatus.OK);
+        return new ResponseEntity<>(new CommonResponse<>(commonResponse.getMsg()), HttpStatus.CREATED);
     }
 
     //비밀번호 변경
