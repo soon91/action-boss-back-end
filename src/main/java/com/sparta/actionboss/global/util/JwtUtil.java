@@ -62,8 +62,8 @@ public class JwtUtil {
     public String createRefreshToken(String nickname) {
         Date date = new Date();
 
-//        long TOKEN_TIME = 7 * 24 * 60 * 60 * 1000L;   //일주일분
-        long TOKEN_TIME = 30 * 60 * 1000L; //     30분(test용)
+//        long TOKEN_TIME = 7 * 24 * 60 * 60 * 1000L;   //일주일
+        long TOKEN_TIME = 5 * 60 * 1000L; //     5분(test용)
 
         return BEARER_PREFIX +
                 Jwts.builder()
