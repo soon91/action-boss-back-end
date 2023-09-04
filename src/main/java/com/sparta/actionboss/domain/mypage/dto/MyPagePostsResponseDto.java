@@ -16,13 +16,16 @@ public class MyPagePostsResponseDto {
     private final Boolean done;
     private final int agreeCount;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd", timezone = "Asia/Seoul")
-    private final LocalDateTime postCreatedAt;
+    private final LocalDateTime createdDay;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm", timezone = "Asia/Seoul")
+    private final LocalDateTime createdTime;
 
     public MyPagePostsResponseDto(Post post){
         this.postId = post.getPostId();
         this.title = post.getTitle();
         this.done = post.isDone();
         this.agreeCount = post.getAgreeCount();
-        this.postCreatedAt = post.getCreatedAt();
+        this.createdDay = post.getCreatedAt();
+        this.createdTime = post.getCreatedAt();
     }
 }
