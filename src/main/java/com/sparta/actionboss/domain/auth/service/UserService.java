@@ -86,8 +86,8 @@ public class UserService {
         if(!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())){
             throw new LoginException(ClientErrorCode.INVALID_PASSWORDS);
         }
-        String accessToken = jwtUtil.createAccessToken(user.getNickname(), user.getRole());
-        String refreshToken = jwtUtil.createRefreshToken(user.getNickname());
+        String accessToken = jwtUtil.createAccessToken(user.getUserId(), user.getRole());
+        String refreshToken = jwtUtil.createRefreshToken(user.getUserId());
 
         LoginResponseDto responseDto = new LoginResponseDto(accessToken, refreshToken);
 
@@ -109,9 +109,11 @@ public class UserService {
                 refreshTokenRepository.findByRefreshToken(refreshToken).orElseThrow(
                         ()-> new LoginException(ClientErrorCode.NO_REFRESHTOKEN));
 
-                String nickname = jwtUtil.getUserInfoFromRefreshToken(refreshToken);
+//                String nickname = jwtUtil.getUserInfoFromRefreshToken(refreshToken);
 
-                String newAccessToken = jwtUtil.createAccessToken(nickname, UserRoleEnum.USER);
+                String subject = jwtUtil.getUserInfoFromRefreshToken(refreshToken);
+                Long userId = Long.parseLong(subject);
+                String newAccessToken = jwtUtil.createAccessToken(userId, UserRoleEnum.USER);
 
                 response.addHeader(JwtUtil.AUTHORIZATION_ACCESS, newAccessToken);
                 return new CommonResponse(CREATE_REFRESHTOKEN);
