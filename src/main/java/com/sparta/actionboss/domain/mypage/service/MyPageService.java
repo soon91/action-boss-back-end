@@ -81,6 +81,8 @@ public class MyPageService {
             throw new MyPageException(ClientErrorCode.DUPLICATE_NICKNAME);
         }
 
+        refreshTokenRepository.deleteByUserId(user.getUserId());
+
 //        if(userRepository.findByNickname(newNickname).isPresent()){
 //            throw new MyPageException(ClientErrorCode.DUPLICATE_NICKNAME);
 //        }
@@ -88,7 +90,7 @@ public class MyPageService {
         String accessToken = jwtUtil.createAccessToken(newNickname, user.getRole());
         String refreshToken = jwtUtil.createRefreshToken(newNickname);
 
-        RefreshToken refreshTokenEntity = new RefreshToken(refreshToken.substring(7), user.getNickname());
+        RefreshToken refreshTokenEntity = new RefreshToken(refreshToken.substring(7), user.getUserId());
         refreshTokenRepository.save(refreshTokenEntity);
 
 

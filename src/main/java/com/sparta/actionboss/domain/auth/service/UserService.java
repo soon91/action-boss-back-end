@@ -79,7 +79,7 @@ public class UserService {
 
     //로그인
     @Transactional
-    public CommonResponse<LoginResponseDto> login(LoginRequestDto requestDto){
+    public CommonResponse<LoginResponseDto> login(LoginRequestDto requestDto, HttpServletResponse response){
 
         User user = userRepository.findByEmail(requestDto.getEmail()).orElseThrow(() ->
                 new LoginException(ClientErrorCode.NO_ACCOUNT));
@@ -89,12 +89,15 @@ public class UserService {
         String accessToken = jwtUtil.createAccessToken(user.getNickname(), user.getRole());
         String refreshToken = jwtUtil.createRefreshToken(user.getNickname());
 
-        LoginResponseDto responseDto = new LoginResponseDto(accessToken, refreshToken);
+        refreshTokenRepository.deleteByUserId(user.getUserId());
 
-        RefreshToken refreshTokenEntity = new RefreshToken(refreshToken.substring(7), user.getNickname());
+        RefreshToken refreshTokenEntity = new RefreshToken(refreshToken.substring(7), user.getUserId());
         refreshTokenRepository.save(refreshTokenEntity);
 
-        return new CommonResponse(LOGIN_SUCCESS, responseDto);
+        response.addHeader(JwtUtil.AUTHORIZATION_ACCESS, accessToken);
+        response.addHeader(JwtUtil.AUTHORIZATION_REFRESH, refreshToken);
+
+        return new CommonResponse(LOGIN_SUCCESS);
     }
 
     //토큰 재발행
@@ -111,8 +114,6 @@ public class UserService {
 
                 String nickname = jwtUtil.getUserInfoFromRefreshToken(refreshToken);
 
-//                String subject = jwtUtil.getUserInfoFromRefreshToken(refreshToken);
-//                Long userId = Long.parseLong(subject);
                 String newAccessToken = jwtUtil.createAccessToken(nickname, UserRoleEnum.USER);
 
                 response.addHeader(JwtUtil.AUTHORIZATION_ACCESS, newAccessToken);
