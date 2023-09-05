@@ -10,6 +10,7 @@ import com.sparta.actionboss.domain.auth.entity.UserRoleEnum;
 import com.sparta.actionboss.domain.auth.repository.UserRepository;
 import com.sparta.actionboss.global.response.CommonResponse;
 import com.sparta.actionboss.global.util.JwtUtil;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,7 +43,7 @@ public class KakaoService {
     private String kakaoClientId;
 
 
-    public CommonResponse<LoginResponseDto> kakaoLogin(String code) throws JsonProcessingException {
+    public CommonResponse<LoginResponseDto> kakaoLogin(String code, HttpServletResponse response) throws JsonProcessingException {
         // 1. "인가 코드"로 "액세스 토큰" 요청
         String accessToken = getToken(code);
 
@@ -56,6 +57,10 @@ public class KakaoService {
         String createAccessToken = jwtUtil.createAccessToken(kakaoUser.getNickname(), kakaoUser.getRole());
         String createRefreshToken = jwtUtil.createRefreshToken(kakaoUser.getNickname());
         LoginResponseDto responseDto = new LoginResponseDto(createAccessToken, createRefreshToken);
+
+        response.addHeader(JwtUtil.AUTHORIZATION_ACCESS, responseDto.getAccessToken());
+        response.addHeader(JwtUtil.AUTHORIZATION_REFRESH, responseDto.getRefreshToken());
+
         return new CommonResponse(LOGIN_SUCCESS, responseDto);
     }
 
