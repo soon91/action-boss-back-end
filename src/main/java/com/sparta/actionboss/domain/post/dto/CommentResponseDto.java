@@ -2,6 +2,7 @@ package com.sparta.actionboss.domain.post.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sparta.actionboss.domain.auth.entity.User;
+import com.sparta.actionboss.domain.auth.entity.UserRoleEnum;
 import com.sparta.actionboss.domain.post.entity.Comment;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,12 +21,17 @@ public class CommentResponseDto {
     private LocalDateTime createdTime;
     private boolean commentOwner;
 
-    public CommentResponseDto(Comment comment, String loginUserNickname) {
+    public CommentResponseDto(Comment comment, User loginUser) {
         this.id = comment.getId();
         this.nickname = comment.getUser().getNickname();
         this.content = comment.getContent();
         this.createdDay = comment.getCreatedAt();
         this.createdTime = comment.getCreatedAt();
-        this.commentOwner = loginUserNickname.equals(comment.getNickname());
+        if(loginUser != null) {
+            this.commentOwner = loginUser.getUserId().equals(comment.getUser().getUserId())
+                    || loginUser.getRole().equals(UserRoleEnum.ADMIN);
+        } else {
+            this.commentOwner = false;
+        }
     }
 }
