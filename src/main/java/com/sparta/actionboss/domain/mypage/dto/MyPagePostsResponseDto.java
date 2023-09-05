@@ -17,7 +17,7 @@ public class MyPagePostsResponseDto {
     private final String title;
     private final Boolean done;
     private final int agreeCount;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd", timezone = "Asia/Seoul")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yy.MM.dd", timezone = "Asia/Seoul")
     private final LocalDateTime createdDay;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm", timezone = "Asia/Seoul")
     private final LocalDateTime createdTime;
