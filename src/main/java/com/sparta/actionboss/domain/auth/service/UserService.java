@@ -79,7 +79,7 @@ public class UserService {
 
     //로그인
     @Transactional
-    public CommonResponse<LoginResponseDto> login(LoginRequestDto requestDto, HttpServletResponse response){
+    public CommonResponse login(LoginRequestDto requestDto, HttpServletResponse response){
 
         User user = userRepository.findByEmail(requestDto.getEmail()).orElseThrow(() ->
                 new LoginException(ClientErrorCode.NO_ACCOUNT));

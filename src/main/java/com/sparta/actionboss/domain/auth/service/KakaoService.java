@@ -43,7 +43,7 @@ public class KakaoService {
     private String kakaoClientId;
 
 
-    public CommonResponse<LoginResponseDto> kakaoLogin(String code, HttpServletResponse response) throws JsonProcessingException {
+    public CommonResponse kakaoLogin(String code, HttpServletResponse response) throws JsonProcessingException {
         // 1. "인가 코드"로 "액세스 토큰" 요청
         String accessToken = getToken(code);
 
@@ -61,7 +61,7 @@ public class KakaoService {
         response.addHeader(JwtUtil.AUTHORIZATION_ACCESS, responseDto.getAccessToken());
         response.addHeader(JwtUtil.AUTHORIZATION_REFRESH, responseDto.getRefreshToken());
 
-        return new CommonResponse(LOGIN_SUCCESS, responseDto);
+        return new CommonResponse(LOGIN_SUCCESS);
     }
 
     private String getToken(String code) throws JsonProcessingException {
