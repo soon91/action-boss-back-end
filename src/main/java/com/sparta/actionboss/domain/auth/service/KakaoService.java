@@ -5,8 +5,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.actionboss.domain.auth.dto.KakaoUserInfoDto;
 import com.sparta.actionboss.domain.auth.dto.LoginResponseDto;
+import com.sparta.actionboss.domain.auth.entity.RefreshToken;
 import com.sparta.actionboss.domain.auth.entity.User;
 import com.sparta.actionboss.domain.auth.entity.UserRoleEnum;
+import com.sparta.actionboss.domain.auth.repository.RefreshTokenRepository;
 import com.sparta.actionboss.domain.auth.repository.UserRepository;
 import com.sparta.actionboss.global.response.CommonResponse;
 import com.sparta.actionboss.global.util.JwtUtil;
@@ -35,6 +37,7 @@ import static com.sparta.actionboss.global.response.SuccessMessage.LOGIN_SUCCESS
 public class KakaoService {
 
     private final PasswordEncoder passwordEncoder;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final UserRepository userRepository;
     private final RestTemplate restTemplate;
     private final JwtUtil jwtUtil;
@@ -56,6 +59,11 @@ public class KakaoService {
         // 4. JWT 토큰 반환
         String createAccessToken = jwtUtil.createAccessToken(kakaoUser.getNickname(), kakaoUser.getRole());
         String createRefreshToken = jwtUtil.createRefreshToken(kakaoUser.getNickname());
+
+        refreshTokenRepository.deleteByUserId(kakaoUser.getUserId());
+
+        RefreshToken refreshTokenEntity = new RefreshToken(createRefreshToken.substring(7), kakaoUser.getUserId());
+        refreshTokenRepository.save(refreshTokenEntity);
 
         response.addHeader(JwtUtil.AUTHORIZATION_ACCESS, createAccessToken);
         response.addHeader(JwtUtil.AUTHORIZATION_REFRESH, createRefreshToken);
@@ -82,7 +90,6 @@ public class KakaoService {
         body.add("grant_type", "authorization_code");
         body.add("client_id", kakaoClientId);
 //        body.add("redirect_uri", "http://localhost:8080/api/auth/kakao");
-//        body.add("redirect_uri", "http://localhost:3000/oauth/callback");
         body.add("redirect_uri", "https://hdaejang.com/oauth/callback");
         body.add("code", code);
 

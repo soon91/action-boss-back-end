@@ -27,21 +27,18 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<CommonResponse<LoginResponseDto>> login(@RequestBody @Valid LoginRequestDto requestDto, HttpServletResponse response){
-        CommonResponse<LoginResponseDto> commonResponse = userService.login(requestDto, response);
-        return new ResponseEntity<>(new CommonResponse<>(commonResponse.getMsg()), HttpStatus.OK);
+    public ResponseEntity<CommonResponse> login(@RequestBody @Valid LoginRequestDto requestDto, HttpServletResponse response){
+        return new ResponseEntity<>(userService.login(requestDto, response), HttpStatus.OK);
     }
 
     @GetMapping("/login/reissueToken")
-    public ResponseEntity<CommonResponse<ReissueTokenResponseDto>> reissueToken(HttpServletRequest request, HttpServletResponse response) {
-        CommonResponse<ReissueTokenResponseDto> commonResponse = userService.reissueToken(request, response);
-        return new ResponseEntity<>(new CommonResponse<>(commonResponse.getMsg()), HttpStatus.CREATED);
+    public ResponseEntity<CommonResponse> reissueToken(HttpServletRequest request, HttpServletResponse response) {
+        return new ResponseEntity<>(userService.reissueToken(request, response), HttpStatus.CREATED);
     }
 
     @PostMapping("/kakao")
-    public ResponseEntity<CommonResponse<LoginResponseDto>> kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
-        CommonResponse<LoginResponseDto> commonResponse = kakaoService.kakaoLogin(code, response);
-        return new ResponseEntity<>(new CommonResponse<>(commonResponse.getMsg()), HttpStatus.OK);
+    public ResponseEntity<CommonResponse> kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
+        return new ResponseEntity<>(kakaoService.kakaoLogin(code, response), HttpStatus.OK);
     }
 
     @PostMapping("/signup/nicknameCheck")
