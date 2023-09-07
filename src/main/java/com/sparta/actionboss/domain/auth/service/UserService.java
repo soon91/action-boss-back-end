@@ -8,13 +8,12 @@ import com.sparta.actionboss.domain.auth.entity.UserRoleEnum;
 import com.sparta.actionboss.domain.auth.repository.EmailRepository;
 import com.sparta.actionboss.domain.auth.repository.RefreshTokenRepository;
 import com.sparta.actionboss.domain.auth.repository.UserRepository;
-import com.sparta.actionboss.global.util.EmailUtil;
 import com.sparta.actionboss.global.exception.LoginException;
 import com.sparta.actionboss.global.exception.SignupException;
 import com.sparta.actionboss.global.exception.errorcode.ClientErrorCode;
 import com.sparta.actionboss.global.response.CommonResponse;
+import com.sparta.actionboss.global.util.EmailUtil;
 import com.sparta.actionboss.global.util.JwtUtil;
-import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +26,7 @@ import org.springframework.util.StringUtils;
 import java.util.Optional;
 
 import static com.sparta.actionboss.global.response.SuccessMessage.*;
-import static com.sparta.actionboss.global.util.JwtUtil.*;
+import static com.sparta.actionboss.global.util.JwtUtil.AUTHORIZATION_REFRESH;
 
 @Slf4j(topic = "UserService")
 @Service
@@ -108,7 +107,6 @@ public class UserService {
         if (StringUtils.hasText(refreshToken)) {
             if (jwtUtil.validateRefreshToken(refreshToken)) {
 
-                //리프레시토큰이 DB에 있는 지 확인
                 refreshTokenRepository.findByRefreshToken(refreshToken).orElseThrow(
                         ()-> new LoginException(ClientErrorCode.NO_REFRESHTOKEN));
 
@@ -123,7 +121,6 @@ public class UserService {
         throw new LoginException(ClientErrorCode.INVALID_REFRESHTOKEN);
     }
 
-    //닉네임 중복확인
     @Transactional(readOnly = true)
     public CommonResponse checkNickname(CheckNicknameRequestDto requestDto) {
         String nickname = requestDto.getNickname();
@@ -136,7 +133,6 @@ public class UserService {
     @Transactional
     public CommonResponse sendEmail(SendEmailRequestDto requestDto) {
 
-        //이메일이 DB에 있는지 확인
         userRepository.findByEmail(requestDto.getEmail()).ifPresent(existingUser -> {
             throw new SignupException(ClientErrorCode.DUPLICATE_EMAIL);
         });
@@ -152,8 +148,6 @@ public class UserService {
         } catch (SignupException e) {
             throw new SignupException(ClientErrorCode.EMAIL_SENDING_FAILED);
         }
-
-
         if (email.isEmpty()) {
             emailRepository.save(Email.builder()
                     .email(requestDto.getEmail())
@@ -161,9 +155,7 @@ public class UserService {
                     .build());
             return response;
         }
-
         email.get().changeSuccessKey(successKey);
-
         return response;
     }
 

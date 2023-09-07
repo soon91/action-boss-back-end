@@ -1,7 +1,6 @@
 package com.sparta.actionboss.domain.auth.entity;
 
 import com.sparta.actionboss.domain.mypage.dto.UpdateEmailRequestDto;
-import com.sparta.actionboss.domain.mypage.dto.UpdateNicknameRequestDto;
 import com.sparta.actionboss.domain.notification.entity.Notification;
 import com.sparta.actionboss.domain.post.entity.Agree;
 import com.sparta.actionboss.domain.post.entity.Comment;
