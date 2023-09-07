@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.actionboss.domain.auth.dto.KakaoUserInfoDto;
-import com.sparta.actionboss.domain.auth.dto.LoginResponseDto;
 import com.sparta.actionboss.domain.auth.entity.RefreshToken;
 import com.sparta.actionboss.domain.auth.entity.User;
 import com.sparta.actionboss.domain.auth.entity.UserRoleEnum;
@@ -146,7 +145,6 @@ public class KakaoService {
         String email = null;
         if (kakaoAccountNode != null && kakaoAccountNode.has("email")) {
             email = kakaoAccountNode.get("email").asText();
-            // 이메일이 제공되는 경우에만 DB에 저장
             log.info("카카오 사용자 정보: " + id + ", " + nickname + ", " + email);
             return new KakaoUserInfoDto(id, nickname, email);
         } else {
@@ -156,51 +154,33 @@ public class KakaoService {
     }
 
     private User registerKakaoUserIfNeeded(KakaoUserInfoDto kakaoUserInfo) {
-        log.info("registerKakaoUserIfNeeded 메서드 시작");
-        // DB 에 중복된 Kakao Id 가 있는지 확인
         Long kakaoId = kakaoUserInfo.getId();
         User kakaoUser = userRepository.findByKakaoId(kakaoId).orElse(null);
 
-
-        //kakaoId 없다면
         if (kakaoUser == null) {
 
-            //닉네임 = 닉네임 + _KAKAO + kakaoId
             String nickname = kakaoUserInfo.getNickname() + "_KAKAO" + kakaoId;
 
-            // password: random UUID
             String password = UUID.randomUUID().toString();
             String encodedPassword = passwordEncoder.encode(password);
 
             String kakaoEmail = kakaoUserInfo.getEmail();
-            log.info("카카오 이메일 확인: {}", kakaoEmail);
-            // 카카오 이메일 제공 동의를 했다면
+
             if(kakaoEmail != null){
                 User sameEmailUser = userRepository.findByEmail(kakaoEmail).orElse(null);
                 if (sameEmailUser != null) {
-                    log.info("동일한 이메일을 가진 회원이 이미 존재");
-                    //만약에 가입한 회원이라면(회원정보가 이미 있다면)
                     kakaoUser = sameEmailUser;
-                    // 기존 회원정보에 카카오 Id 추가
                     kakaoUser = kakaoUser.kakaoIdUpdate(kakaoId);
                 } else {
-                    log.info("신규 회원가입을 진행");
-                    // 신규 회원가입
-                    // email: kakao email
                     String email = kakaoUserInfo.getEmail();
-                    log.info("신규 회원 이메일: {}", email);
-
                     kakaoUser = new User(nickname, encodedPassword, email, UserRoleEnum.USER, kakaoId);
                 }
                 userRepository.save(kakaoUser);
             } else {
-                // 카카오 이메일 제공 동의를 하지 않았다면
-                log.info("이메일이 없으므로 새로운 유저를 생성");
                 kakaoUser = new User(nickname, encodedPassword, UserRoleEnum.USER, kakaoId);
                 userRepository.save(kakaoUser);
             }
         }
-        log.info("registerKakaoUserIfNeeded 메서드 종료");
         return kakaoUser;
     }
 }

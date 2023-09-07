@@ -7,8 +7,4 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ReissueTokenResponseDto {
     private String accessToken;
-
-    public ReissueTokenResponseDto(String accessToken){
-        this.accessToken = accessToken;
-    }
 }
