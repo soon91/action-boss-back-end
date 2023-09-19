@@ -1,6 +1,6 @@
-package com.sparta.actionboss.domain.post.repository;
+package com.sparta.actionboss.domain.comment.repository;
 
-import com.sparta.actionboss.domain.post.entity.Comment;
+import com.sparta.actionboss.domain.comment.entity.Comment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

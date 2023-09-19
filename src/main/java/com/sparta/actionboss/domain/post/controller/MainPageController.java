@@ -3,7 +3,7 @@ package com.sparta.actionboss.domain.post.controller;
 import com.sparta.actionboss.domain.post.dto.MapListResponseDto;
 import com.sparta.actionboss.domain.post.dto.PostListAndTotalPageResponseDto;
 import com.sparta.actionboss.domain.post.dto.PostModalResponseDto;
-import com.sparta.actionboss.domain.post.service.PostGetService;
+import com.sparta.actionboss.domain.post.service.MainPageService;
 import com.sparta.actionboss.global.response.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,9 +15,9 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
-public class PostGetController {
+public class MainPageController {
 
-    private final PostGetService postGetService;
+    private final MainPageService postGetService;
 
     @GetMapping("/main")
     public ResponseEntity<CommonResponse<PostListAndTotalPageResponseDto>> getPostList(

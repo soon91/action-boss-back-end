@@ -1,6 +1,7 @@
-package com.sparta.actionboss.domain.post.entity;
+package com.sparta.actionboss.domain.comment.entity;
 
 import com.sparta.actionboss.domain.auth.entity.User;
+import com.sparta.actionboss.domain.post.entity.Post;
 import com.sparta.actionboss.global.entity.Timestamped;
 import jakarta.persistence.*;
 import lombok.Getter;

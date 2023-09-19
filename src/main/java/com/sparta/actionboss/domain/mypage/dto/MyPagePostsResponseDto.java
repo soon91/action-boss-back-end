@@ -3,12 +3,11 @@ package com.sparta.actionboss.domain.mypage.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.sparta.actionboss.domain.post.entity.Agree;
-import com.sparta.actionboss.domain.post.entity.Comment;
+import com.sparta.actionboss.domain.comment.entity.Comment;
 import com.sparta.actionboss.domain.post.entity.Post;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)

@@ -1,4 +1,4 @@
-package com.sparta.actionboss.domain.post.dto;
+package com.sparta.actionboss.domain.comment.dto;
 
 import lombok.Getter;
 

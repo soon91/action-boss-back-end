@@ -1,6 +1,5 @@
 package com.sparta.actionboss.domain.post.controller;
 
-
 import com.sparta.actionboss.domain.post.dto.PostRequestDto;
 import com.sparta.actionboss.domain.post.dto.PostResponseDto;
 import com.sparta.actionboss.domain.post.service.PostService;
@@ -25,7 +24,6 @@ public class PostController {
 
     private final PostService postService;
 
-
     // 민원글 작성
     @PostMapping("")
     public ResponseEntity<CommonResponse> createPost(
@@ -45,7 +43,6 @@ public class PostController {
         return new ResponseEntity<>(postService.getPost(postId), HttpStatus.OK);
     }
 
-
     // 민원글 수정
     @PutMapping("/{postId}")
     public ResponseEntity<CommonResponse> updatePost(
@@ -55,7 +52,6 @@ public class PostController {
     ) {
         return new ResponseEntity<>(postService.updatePost(postId, postRequestDto, userDetails.getUser()), HttpStatus.CREATED);
     }
-
 
     // 민원글 삭제
     @DeleteMapping("/{postId}")
@@ -67,4 +63,15 @@ public class PostController {
                 postId,
                 userDetails.getUser()), HttpStatus.OK);
     }
+
+    @PostMapping("/{postId}/agree")
+    public ResponseEntity<CommonResponse> agreePost(@PathVariable Long postId, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return new ResponseEntity<>(postService.agreePost(postId, userDetails.getUser()), HttpStatus.OK);
+    }
+
+    @PostMapping("{postId}/done")
+    public ResponseEntity<CommonResponse> createLike(@PathVariable Long postId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return new ResponseEntity<>(postService.createDone(postId, userDetails.getUser()), HttpStatus.OK);
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.sparta.actionboss.domain.post.entity;
 
 import com.sparta.actionboss.domain.auth.entity.User;
+import com.sparta.actionboss.domain.comment.entity.Comment;
 import com.sparta.actionboss.domain.notification.entity.Notification;
 import com.sparta.actionboss.domain.post.dto.PostRequestDto;
 import com.sparta.actionboss.global.entity.Timestamped;

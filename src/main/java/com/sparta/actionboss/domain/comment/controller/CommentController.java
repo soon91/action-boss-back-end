@@ -1,7 +1,7 @@
-package com.sparta.actionboss.domain.post.controller;
+package com.sparta.actionboss.domain.comment.controller;
 
-import com.sparta.actionboss.domain.post.dto.CommentRequestDto;
-import com.sparta.actionboss.domain.post.service.CommentService;
+import com.sparta.actionboss.domain.comment.dto.CommentRequestDto;
+import com.sparta.actionboss.domain.comment.service.CommentService;
 import com.sparta.actionboss.global.response.CommonResponse;
 import com.sparta.actionboss.global.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
