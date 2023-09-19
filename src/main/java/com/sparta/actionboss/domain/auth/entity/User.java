@@ -3,7 +3,7 @@ package com.sparta.actionboss.domain.auth.entity;
 import com.sparta.actionboss.domain.mypage.dto.UpdateEmailRequestDto;
 import com.sparta.actionboss.domain.notification.entity.Notification;
 import com.sparta.actionboss.domain.post.entity.Agree;
-import com.sparta.actionboss.domain.post.entity.Comment;
+import com.sparta.actionboss.domain.comment.entity.Comment;
 import com.sparta.actionboss.domain.post.entity.Done;
 import com.sparta.actionboss.domain.post.entity.Post;
 import com.sparta.actionboss.global.entity.Timestamped;

@@ -1,9 +1,9 @@
-package com.sparta.actionboss.domain.post.dto;
+package com.sparta.actionboss.domain.comment.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sparta.actionboss.domain.auth.entity.User;
 import com.sparta.actionboss.domain.auth.entity.UserRoleEnum;
-import com.sparta.actionboss.domain.post.entity.Comment;
+import com.sparta.actionboss.domain.comment.entity.Comment;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

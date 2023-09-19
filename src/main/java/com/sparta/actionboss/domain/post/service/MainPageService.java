@@ -27,7 +27,7 @@ import static com.sparta.actionboss.global.response.SuccessMessage.GET_POST_MESS
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class PostGetService {
+public class MainPageService {
 
     @Value("${aws.bucket.url}")
     private String s3Url;
